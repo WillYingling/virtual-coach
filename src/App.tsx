@@ -1,34 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { Stack, Button } from '@mui/material';
+import Simulator from './components/Simulator';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [skills, setSkills] = useState<string[]>([]);
 
+  function generateSkills() {
+    console.log("Generating skills");
+    setSkills(["Skill 1", "Skill 2", "Skill3"])
+  }
+  
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Stack p={1} flexGrow={1} justifyContent="center" alignItems="center">
+      <Button variant="contained" onClick={generateSkills}>
+        Generate Skills
+      </Button>
+      <Stack direction="row" sx={{
+        minWidth: "50%",
+        justifyContent: "space-around"}} >
+        <Stack id="routineHolder" >
+          Routines
+        </Stack>
+        <Stack sx={{minWidth: '50%'}}>
+          Skill Library
+        </Stack>
+      </Stack>
+
+      <Simulator />
+    </Stack>
   )
 }
 
