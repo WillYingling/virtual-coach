@@ -1,105 +1,58 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
-import type { AthletePosition } from './Athlete';
 import FrameMarker from './FrameMarker';
 import AthleteController, { type Skill } from './AthleteController';
 
-const tuck = {
-  leftShoulder: 3*Math.PI / 2,  // Equivalent to -π/2, but interpolates shorter path from π
-  rightShoulder: 3*Math.PI / 2,
-  leftThigh: -3*Math.PI/4,
-  rightThigh: -3*Math.PI/4,
+export const positions = {
+  tuck: {
+    leftShoulder: 3*Math.PI / 2,  // Equivalent to -π/2, but interpolates shorter path from π
+    rightShoulder: 3*Math.PI / 2,
+    leftThigh: -3*Math.PI/4,
+    rightThigh: -3*Math.PI/4,
 
-  leftShin: 3*Math.PI/4,
-  rightShin: 3*Math.PI/4,
+    leftShin: 3*Math.PI/4,
+    rightShin: 3*Math.PI/4,
+  },
+  pike: {
+    leftShoulder: 3*Math.PI / 2,
+    rightShoulder: 3*Math.PI / 2,
+    leftThigh: -3*Math.PI/4,
+    rightThigh: -3*Math.PI/4,
+
+    leftShin: 0,
+    rightShin: 0,
+  },
+  straightArmsUp: {
+    leftShoulder: Math.PI,
+    rightShoulder: Math.PI,
+    leftThigh: 0,
+    rightThigh: 0,
+
+    leftShin: 0,
+    rightShin: 0,
+  },
+  straightArmsDown: {
+    leftShoulder: 2*Math.PI,
+    rightShoulder: 2*Math.PI,
+    leftThigh: 0,
+    rightThigh: 0,
+
+    leftShin: 0,
+    rightShin: 0,
+  },
 };
 
-const pike = {
-  leftShoulder: 3*Math.PI / 2,
-  rightShoulder: 3*Math.PI / 2,
-  leftThigh: -3*Math.PI/4,
-  rightThigh: -3*Math.PI/4,
-
-  leftShin: 0,
-  rightShin: 0,
+interface SimulatorProps {
+  skills: Skill[];
 }
 
-const straightArmsUp = {
-  leftShoulder: Math.PI,
-  rightShoulder: Math.PI,
-  leftThigh: 0,
-  rightThigh: 0,
-
-  leftShin: 0,
-  rightShin: 0,
-}
-
-const straightArmsDown = {
-  leftShoulder: 2*Math.PI,
-  rightShoulder: 2*Math.PI,
-  leftThigh: 0,
-  rightThigh: 0,
-
-  leftShin: 0,
-  rightShin: 0,
-}
-
-function Simulator() {
+function Simulator({ skills }: SimulatorProps) {
   // Rotate camera position 45 degrees around Z axis
   const angle = Math.PI / 4; // 45 degrees
   const x = 0 * Math.cos(angle) - 5 * Math.sin(angle);
   const y = 0 * Math.sin(angle) + 5 * Math.cos(angle);
   const z = 18;
   
-  // Define skills - each skill is a sequence of positions that start and end at height 0
-  const skills: Skill[] = [
-    {
-      positions: [
-        {
-          height: 0,
-          rotation: 0,
-          twist: 0,
-          joints: straightArmsUp,
-        },
-        {
-          height: 0,
-          rotation: 0.95,
-          twist: 0.45,
-          joints: straightArmsUp,
-        },
-        {
-          height: 0,
-          rotation: 1,
-          twist: 0.5,
-          joints: straightArmsUp,
-        },
-      ],
-      timestamps: [0, 0.9, 1],
-    },
-{
-      positions: [
-        {
-          height: 0,
-          rotation: 0,
-          twist: 0,
-          joints: straightArmsUp,
-        },
-        {
-          height: 0,
-          rotation: -0.95,
-          twist: 0.45,
-          joints: straightArmsUp,
-        },
-        {
-          height: 0,
-          rotation: -1,
-          twist: 0.5,
-          joints: straightArmsUp,
-        },
-      ],
-      timestamps: [0, 0.9, 1],
-    },
-  ];
   
   return (
     <Canvas style={{ width: '90vw', height: '400px', border: '1px solid red' }}

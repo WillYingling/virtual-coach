@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Front Flip with Half Twist",
+    "startingPosition": "Standing",
+    "flips": 1,
+    "twists": 0.5
+  },
+  {
+    "name": "Double Front Flip with Full Twist",
+    "startingPosition": "Standing",
+    "flips": 2,
+    "twists": 1
+  },
+  {
+    "name": "Front Flip",
+    "startingPosition": "Standing",
+    "flips": 1,
+    "twists": 0
+  },
+{
+    "name": "Rudy",
+    "startingPosition": "Standing",
+    "flips": 1,
+    "twists": 1.5
+  }
+]

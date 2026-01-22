@@ -5,7 +5,7 @@ import FrameMarker from './FrameMarker';
 
 // Complete athlete position state
 export interface AthletePosition {
-  height: number;           // Height of athlete center of mass (meters)
+  height: number;
   rotation: number;         // Rotation around X-axis (number of rotations, 1.0 = 2π) - somersault
   twist: number;            // Rotation around Y-axis (number of rotations, 1.0 = 2π) - twist
   joints: {

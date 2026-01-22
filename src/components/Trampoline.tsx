@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useFrame } from "@react-three/fiber";
 import * as THREE from 'three';
 
-function Trampoline({ athleteRef }: { athleteRef: React.RefObject<THREE.Group> }) {
+function Trampoline({ athleteRef }: { athleteRef: React.RefObject<THREE.Group | null> }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const originalPositions = useRef<Float32Array | null>(null);
   
