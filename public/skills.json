@@ -1,26 +1,58 @@
 [
   {
-    "name": "Front Flip with Half Twist",
-    "startingPosition": "Standing",
-    "flips": 1,
-    "twists": 0.5
-  },
-  {
     "name": "Double Front Flip with Full Twist",
     "startingPosition": "Standing",
     "flips": 2,
-    "twists": 1
+    "twists": 1,
+    "position": "Tuck",
+    "possiblePositions": ["Tuck", "Pike"]
   },
   {
     "name": "Front Flip",
     "startingPosition": "Standing",
     "flips": 1,
-    "twists": 0
+    "twists": 0,
+    "position": "Tuck",
+    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
   },
-{
+  {
+    "name": "Back Flip",
+    "startingPosition": "Standing",
+    "flips": -1,
+    "twists": 0,
+    "position": "Tuck",
+    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
+  },
+  {
+    "name": "Barani",
+    "startingPosition": "Standing",
+    "flips": 1,
+    "twists": 0.5,
+    "position": "Tuck",
+    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
+  },
+  {
+    "name": "Fliffis",
+    "startingPosition": "Standing",
+    "flips": 2,
+    "twists": 0.5,
+    "position": "Tuck",
+    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
+  },
+  {
     "name": "Rudy",
     "startingPosition": "Standing",
     "flips": 1,
-    "twists": 1.5
+    "twists": 1.5,
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown", "Tuck"]
+  },
+  {
+    "name": "Straight Jump",
+    "startingPosition": "Standing",
+    "flips": 0,
+    "twists": 0,
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
   }
 ]

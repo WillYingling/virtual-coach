@@ -8,9 +8,17 @@ export enum StartingPosition {
   Seated = "Seated",
 }
 
+export enum Position {
+    Straight = "StraightArmsDown",
+    Tuck = "Tuck",
+    Pike = "Pike",
+}
+
 export interface SkillDefinition {
   name: string;
   startingPosition: StartingPosition;
   flips: number;   // Number of somersaults
   twists: number;  // Number of twists
+  position: Position;
+  possiblePositions?: Position[]; // Alternative positions for the skill
 }

@@ -5,7 +5,7 @@ import FrameMarker from './FrameMarker';
 
 // Complete athlete position state
 export interface AthletePosition {
-  height: number;
+  height?: number;
   rotation: number;         // Rotation around X-axis (number of rotations, 1.0 = 2π) - somersault
   twist: number;            // Rotation around Y-axis (number of rotations, 1.0 = 2π) - twist
   joints: {
@@ -42,7 +42,7 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
       const { height, rotation, twist, joints } = props.athletePosition;
       
       // Apply height to main group
-      if (ref && typeof ref !== 'function' && ref.current) {
+      if (ref && typeof ref !== 'function' && ref.current && height !== undefined) {
         ref.current.position.y = height;
       }
       
