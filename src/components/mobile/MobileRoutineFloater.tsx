@@ -1,1 +1,290 @@
-import {\n  Fab,\n  Badge,\n  Drawer,\n  Box,\n  Typography,\n  IconButton,\n  Stack,\n  Paper,\n  Chip,\n  useMediaQuery,\n  useTheme,\n} from '@mui/material';\nimport { useState } from 'react';\nimport PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';\nimport PlayArrowIcon from '@mui/icons-material/PlayArrow';\nimport DeleteIcon from '@mui/icons-material/Delete';\nimport ShuffleIcon from '@mui/icons-material/Shuffle';\nimport CloseIcon from '@mui/icons-material/Close';\nimport KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';\nimport KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';\nimport RemoveIcon from '@mui/icons-material/Remove';\nimport type { SkillDefinition } from '../../models/SkillDefinition';\nimport { formatPositionDisplay, routineDifficultyScore } from '../../utils/skillUtils';\nimport { ActionIconButton } from '../common/ActionIconButton';\n\ninterface MobileRoutineFloaterProps {\n  routine: SkillDefinition[];\n  onPlayRoutine: () => void;\n  onClearRoutine: () => void;\n  onRandomizeRoutine: () => void;\n  onRemoveSkill: (index: number) => void;\n  onMoveSkill: (fromIndex: number, toIndex: number) => void;\n  skillDefinitionsLength: number;\n  useWomensScoring?: boolean;\n  onToggleScoring?: (womens: boolean) => void;\n}\n\nexport const MobileRoutineFloater = ({\n  routine,\n  onPlayRoutine,\n  onClearRoutine,\n  onRandomizeRoutine,\n  onRemoveSkill,\n  onMoveSkill,\n  skillDefinitionsLength,\n  useWomensScoring = false,\n  onToggleScoring,\n}: MobileRoutineFloaterProps) => {\n  const [drawerOpen, setDrawerOpen] = useState(false);\n  const theme = useTheme();\n  const isMobile = useMediaQuery(theme.breakpoints.down('md'));\n  \n  const hasTriples = routine.some((skill) => skill.flips >= 3);\n\n  if (!isMobile) return null; // Only show on mobile\n\n  return (\n    <>\n      {/* Floating Action Button */}\n      <Fab\n        color=\"primary\"\n        sx={{\n          position: 'fixed',\n          bottom: 24,\n          right: 24,\n          width: 64,\n          height: 64,\n          zIndex: 1000,\n        }}\n        onClick={() => setDrawerOpen(true)}\n      >\n        <Badge badgeContent={routine.length} color=\"error\" max={99}>\n          <PlaylistPlayIcon sx={{ fontSize: 28 }} />\n        </Badge>\n      </Fab>\n\n      {/* Bottom Drawer */}\n      <Drawer\n        anchor=\"bottom\"\n        open={drawerOpen}\n        onClose={() => setDrawerOpen(false)}\n        PaperProps={{\n          sx: {\n            borderTopLeftRadius: 16,\n            borderTopRightRadius: 16,\n            maxHeight: '80vh',\n            bgcolor: 'background.paper',\n          },\n        }}\n      >\n        <Box sx={{ p: 2 }}>\n          {/* Header */}\n          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>\n            <Typography variant=\"h6\" sx={{ fontWeight: 600 }}>\n              Routine ({routine.length} skills)\n            </Typography>\n            <IconButton onClick={() => setDrawerOpen(false)} sx={{ p: 1 }}>\n              <CloseIcon />\n            </IconButton>\n          </Box>\n\n          {routine.length === 0 ? (\n            <Box sx={{ textAlign: 'center', py: 4 }}>\n              <Typography color=\"text.secondary\" sx={{ mb: 2 }}>\n                No skills in routine yet\n              </Typography>\n              <Typography variant=\"body2\" color=\"text.secondary\">\n                Add skills from the library below\n              </Typography>\n            </Box>\n          ) : (\n            <>\n              {/* Routine Summary */}\n              <Paper\n                sx={{\n                  bgcolor: 'primary.main',\n                  color: 'primary.contrastText',\n                  p: 2,\n                  mb: 2,\n                  borderRadius: 2,\n                }}\n              >\n                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>\n                  <Typography variant=\"h6\" sx={{ fontWeight: 600 }}>\n                    Total Difficulty\n                  </Typography>\n                  <Typography variant=\"h5\" sx={{ fontWeight: 700 }}>\n                    {routineDifficultyScore(routine, useWomensScoring)} DD\n                  </Typography>\n                </Box>\n                \n                {hasTriples && onToggleScoring && (\n                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>\n                    <Typography variant=\"body2\" sx={{ opacity: 0.9 }}>\n                      Scoring System:\n                    </Typography>\n                    <Box\n                      onClick={() => onToggleScoring(!useWomensScoring)}\n                      sx={{\n                        bgcolor: 'rgba(255, 255, 255, 0.2)',\n                        px: 2,\n                        py: 0.5,\n                        borderRadius: 1,\n                        cursor: 'pointer',\n                        minHeight: 32,\n                        display: 'flex',\n                        alignItems: 'center',\n                      }}\n                    >\n                      <Typography variant=\"body2\" sx={{ fontSize: '0.875rem' }}>\n                        {useWomensScoring ? \"Women's\" : \"Men's\"}\n                      </Typography>\n                    </Box>\n                  </Box>\n                )}\n              </Paper>\n\n              {/* Action Buttons */}\n              <Stack direction=\"row\" spacing={1} sx={{ mb: 2 }}>\n                <ActionIconButton\n                  variant=\"primary\"\n                  size=\"large\"\n                  onClick={() => {\n                    onPlayRoutine();\n                    setDrawerOpen(false);\n                  }}\n                  sx={{ flex: 1, minHeight: 48, borderRadius: 2 }}\n                >\n                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>\n                    <PlayArrowIcon />\n                    <Typography variant=\"body2\" sx={{ fontWeight: 600 }}>\n                      Play\n                    </Typography>\n                  </Box>\n                </ActionIconButton>\n                \n                <ActionIconButton\n                  variant=\"warning\"\n                  size=\"large\"\n                  onClick={onRandomizeRoutine}\n                  disabled={skillDefinitionsLength === 0}\n                  sx={{ minHeight: 48, minWidth: 48, borderRadius: 2 }}\n                >\n                  <ShuffleIcon />\n                </ActionIconButton>\n                \n                <ActionIconButton\n                  variant=\"error\"\n                  size=\"large\"\n                  onClick={() => {\n                    onClearRoutine();\n                    setDrawerOpen(false);\n                  }}\n                  sx={{ minHeight: 48, minWidth: 48, borderRadius: 2 }}\n                >\n                  <DeleteIcon />\n                </ActionIconButton>\n              </Stack>\n\n              {/* Skills List */}\n              <Box sx={{ maxHeight: 400, overflow: 'auto' }}>\n                <Stack spacing={1}>\n                  {routine.map((def, idx) => (\n                    <Paper\n                      key={idx}\n                      variant=\"outlined\"\n                      sx={{\n                        p: 2,\n                        borderRadius: 2,\n                        bgcolor: 'background.default',\n                      }}\n                    >\n                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>\n                        <Typography variant=\"body1\" sx={{ flex: 1 }}>\n                          <strong>{idx + 1}.</strong> {def.name}\n                        </Typography>\n                        \n                        {/* Mobile Control Buttons */}\n                        <Stack direction=\"row\" spacing={0.5}>\n                          <IconButton\n                            size=\"small\"\n                            onClick={() => onMoveSkill(idx, idx - 1)}\n                            disabled={idx === 0}\n                            sx={{ minWidth: 40, minHeight: 40 }}\n                          >\n                            <KeyboardArrowUpIcon />\n                          </IconButton>\n                          <IconButton\n                            size=\"small\"\n                            onClick={() => onMoveSkill(idx, idx + 1)}\n                            disabled={idx === routine.length - 1}\n                            sx={{ minWidth: 40, minHeight: 40 }}\n                          >\n                            <KeyboardArrowDownIcon />\n                          </IconButton>\n                          <ActionIconButton\n                            variant=\"error\"\n                            size=\"small\"\n                            onClick={() => onRemoveSkill(idx)}\n                            sx={{ minWidth: 40, minHeight: 40 }}\n                          >\n                            <RemoveIcon sx={{ fontSize: 16 }} />\n                          </ActionIconButton>\n                        </Stack>\n                      </Box>\n                      \n                      <Chip\n                        label={formatPositionDisplay(def.position)}\n                        size=\"small\"\n                        color=\"primary\"\n                        variant=\"outlined\"\n                        sx={{ mt: 1 }}\n                      />\n                    </Paper>\n                  ))}\n                </Stack>\n              </Box>\n            </>\n          )}\n        </Box>\n      </Drawer>\n    </>\n  );\n};
+import {
+  Fab,
+  Badge,
+  Drawer,
+  Box,
+  Typography,
+  IconButton,
+  Stack,
+  Paper,
+  Chip,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { useState } from "react";
+import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ShuffleIcon from "@mui/icons-material/Shuffle";
+import CloseIcon from "@mui/icons-material/Close";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import RemoveIcon from "@mui/icons-material/Remove";
+import type { SkillDefinition } from "../../models/SkillDefinition";
+import {
+  formatPositionDisplay,
+  routineDifficultyScore,
+} from "../../utils/skillUtils";
+import { ActionIconButton } from "../common/ActionIconButton";
+
+interface MobileRoutineFloaterProps {
+  routine: SkillDefinition[];
+  onPlayRoutine: () => void;
+  onClearRoutine: () => void;
+  onRandomizeRoutine: () => void;
+  onRemoveSkill: (index: number) => void;
+  onMoveSkill: (fromIndex: number, toIndex: number) => void;
+  skillDefinitionsLength: number;
+  useWomensScoring?: boolean;
+  onToggleScoring?: (womens: boolean) => void;
+}
+
+export const MobileRoutineFloater = ({
+  routine,
+  onPlayRoutine,
+  onClearRoutine,
+  onRandomizeRoutine,
+  onRemoveSkill,
+  onMoveSkill,
+  skillDefinitionsLength,
+  useWomensScoring = false,
+  onToggleScoring,
+}: MobileRoutineFloaterProps) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const hasTriples = routine.some((skill) => skill.flips >= 3);
+
+  if (!isMobile) return null; // Only show on mobile
+
+  return (
+    <>
+      {/* Floating Action Button */}
+      <Fab
+        color="primary"
+        sx={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          width: 64,
+          height: 64,
+          zIndex: 1000,
+        }}
+        onClick={() => setDrawerOpen(true)}
+      >
+        <Badge badgeContent={routine.length} color="error" max={99}>
+          <PlaylistPlayIcon sx={{ fontSize: 28 }} />
+        </Badge>
+      </Fab>
+
+      {/* Bottom Drawer */}
+      <Drawer
+        anchor="bottom"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            maxHeight: "80vh",
+            bgcolor: "background.paper",
+          },
+        }}
+      >
+        <Box sx={{ p: 2 }}>
+          {/* Header */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 2,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Routine ({routine.length} skills)
+            </Typography>
+            <IconButton onClick={() => setDrawerOpen(false)} sx={{ p: 1 }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          {routine.length === 0 ? (
+            <Box sx={{ textAlign: "center", py: 4 }}>
+              <Typography color="text.secondary" sx={{ mb: 2 }}>
+                No skills in routine yet
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Add skills from the library below
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              {/* Routine Summary */}
+              <Paper
+                sx={{
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                  p: 2,
+                  mb: 2,
+                  borderRadius: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Total Difficulty
+                  </Typography>
+                  <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                    {routineDifficultyScore(routine, useWomensScoring)} DD
+                  </Typography>
+                </Box>
+
+                {hasTriples && onToggleScoring && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                      Scoring System:
+                    </Typography>
+                    <Box
+                      onClick={() => onToggleScoring(!useWomensScoring)}
+                      sx={{
+                        bgcolor: "rgba(255, 255, 255, 0.2)",
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: 1,
+                        cursor: "pointer",
+                        minHeight: 32,
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
+                        {useWomensScoring ? "Women's" : "Men's"}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
+              </Paper>
+
+              {/* Action Buttons */}
+              <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                <ActionIconButton
+                  variant="primary"
+                  size="medium"
+                  onClick={() => {
+                    onPlayRoutine();
+                    setDrawerOpen(false);
+                  }}
+                  sx={{ flex: 1, minHeight: 48, borderRadius: 2 }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <PlayArrowIcon />
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      Play
+                    </Typography>
+                  </Box>
+                </ActionIconButton>
+
+                <ActionIconButton
+                  variant="warning"
+                  size="medium"
+                  onClick={onRandomizeRoutine}
+                  disabled={skillDefinitionsLength === 0}
+                  sx={{ minHeight: 48, minWidth: 48, borderRadius: 2 }}
+                >
+                  <ShuffleIcon />
+                </ActionIconButton>
+
+                <ActionIconButton
+                  variant="error"
+                  size="medium"
+                  onClick={() => {
+                    onClearRoutine();
+                    setDrawerOpen(false);
+                  }}
+                  sx={{ minHeight: 48, minWidth: 48, borderRadius: 2 }}
+                >
+                  <DeleteIcon />
+                </ActionIconButton>
+              </Stack>
+
+              {/* Skills List */}
+              <Box sx={{ maxHeight: 400, overflow: "auto" }}>
+                <Stack spacing={1}>
+                  {routine.map((def, idx) => (
+                    <Paper
+                      key={idx}
+                      variant="outlined"
+                      sx={{
+                        p: 2,
+                        borderRadius: 2,
+                        bgcolor: "background.default",
+                      }}
+                    >
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                      >
+                        <Typography variant="body1" sx={{ flex: 1 }}>
+                          <strong>{idx + 1}.</strong> {def.name}
+                        </Typography>
+
+                        {/* Mobile Control Buttons */}
+                        <Stack direction="row" spacing={0.5}>
+                          <IconButton
+                            size="small"
+                            onClick={() => onMoveSkill(idx, idx - 1)}
+                            disabled={idx === 0}
+                            sx={{ minWidth: 40, minHeight: 40 }}
+                          >
+                            <KeyboardArrowUpIcon />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => onMoveSkill(idx, idx + 1)}
+                            disabled={idx === routine.length - 1}
+                            sx={{ minWidth: 40, minHeight: 40 }}
+                          >
+                            <KeyboardArrowDownIcon />
+                          </IconButton>
+                          <ActionIconButton
+                            variant="error"
+                            size="small"
+                            onClick={() => onRemoveSkill(idx)}
+                            sx={{ minWidth: 40, minHeight: 40 }}
+                          >
+                            <RemoveIcon sx={{ fontSize: 16 }} />
+                          </ActionIconButton>
+                        </Stack>
+                      </Box>
+
+                      <Chip
+                        label={formatPositionDisplay(def.position)}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        sx={{ mt: 1 }}
+                      />
+                    </Paper>
+                  ))}
+                </Stack>
+              </Box>
+            </>
+          )}
+        </Box>
+      </Drawer>
+    </>
+  );
+};
