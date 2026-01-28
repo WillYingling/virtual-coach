@@ -16,7 +16,8 @@ export function useSkillDefinitions() {
 
   // Load skill definitions from JSON file
   useEffect(() => {
-    fetch("/skills.json")
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    fetch(`${baseUrl}skills.json`)
       .then((response) => response.json())
       .then((data: SkillDefinition[]) => {
         setSkillDefinitions(data);
