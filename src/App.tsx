@@ -18,8 +18,14 @@ function App() {
     removeSkill,
     moveSkill,
   } = useRoutine(skillDefinitions);
-  const { skills, simulatorOpen, playSkill, playRoutine, closeSimulator } =
-    useSimulator();
+  const {
+    skills,
+    skillNames,
+    simulatorOpen,
+    playSkill,
+    playRoutine,
+    closeSimulator,
+  } = useSimulator();
 
   const handlePlaySkill = (definition: SkillDefinition) => {
     const selectedPos = selectedPositions[definition.name];
@@ -137,6 +143,7 @@ function App() {
       <SimulatorModal
         open={simulatorOpen}
         skills={skills}
+        skillNames={skillNames}
         onClose={closeSimulator}
       />
     </Box>

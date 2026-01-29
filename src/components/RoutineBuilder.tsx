@@ -10,6 +10,8 @@ import {
   Button,
   IconButton,
   Switch,
+  Alert,
+  Collapse,
 } from "@mui/material";
 import { useState } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -18,11 +20,16 @@ import ShuffleIcon from "@mui/icons-material/Shuffle";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import RemoveIcon from "@mui/icons-material/Remove";
+import WarningIcon from "@mui/icons-material/Warning";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import {
   formatPositionDisplay,
   routineDifficultyScore,
 } from "../utils/skillUtils";
+import {
+  isRoutineValid,
+  getRoutineValidationErrors,
+} from "../utils/routineValidation";
 import { ActionIconButton } from "./common/ActionIconButton";
 import { CONSTANTS } from "../constants";
 
@@ -49,6 +56,10 @@ export default function RoutineBuilder({
 
   // Check if routine contains any triple flips (3+ flips)
   const hasTriples = routine.some((skill) => skill.flips >= 3);
+
+  // Validate routine
+  const routineIsValid = isRoutineValid(routine);
+  const validationErrors = getRoutineValidationErrors(routine);
 
   return (
     <Card
@@ -173,6 +184,27 @@ export default function RoutineBuilder({
                 )}
               </Stack>
             </Paper>
+
+            {/* Routine Validation Warning */}
+            <Collapse in={!routineIsValid && routine.length > 1}>
+              <Alert severity="warning" icon={<WarningIcon />} sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Invalid Routine - Position Mismatch
+                </Typography>
+                {validationErrors.map((error, index) => (
+                  <Typography key={index} variant="body2" sx={{ mb: 0.5 }}>
+                    • {error}
+                  </Typography>
+                ))}
+                <Typography
+                  variant="caption"
+                  sx={{ mt: 1, display: "block", opacity: 0.8 }}
+                >
+                  This routine cannot be performed as skills must start from the
+                  ending position of the previous skill.
+                </Typography>
+              </Alert>
+            </Collapse>
 
             {/* Skills List */}
             <Stack spacing={1}>

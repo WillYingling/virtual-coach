@@ -10,6 +10,7 @@ import { CONSTANTS } from "../constants";
  */
 export function useSimulator() {
   const [skills, setSkills] = useState<Skill[]>([]);
+  const [skillNames, setSkillNames] = useState<string[]>([]);
   const [simulatorOpen, setSimulatorOpen] = useState(false);
   const [renderProperties] = useState({
     stallDuration: CONSTANTS.ANIMATION.STALL_DURATION,
@@ -29,6 +30,7 @@ export function useSimulator() {
 
     const skill = skillDefinitionToSkill(skillToPlay, renderProperties);
     setSkills([skill]);
+    setSkillNames([skillToPlay.name]);
     setSimulatorOpen(true);
   };
 
@@ -45,6 +47,7 @@ export function useSimulator() {
         return skill;
       });
       setSkills(animatedSkills);
+      setSkillNames(routine.map((def) => def.name));
       setSimulatorOpen(true);
     }
   };
@@ -52,10 +55,12 @@ export function useSimulator() {
   const closeSimulator = () => {
     setSimulatorOpen(false);
     setSkills([]);
+    setSkillNames([]);
   };
 
   return {
     skills,
+    skillNames,
     simulatorOpen,
     playSkill,
     playRoutine,

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import { Position } from "../models/SkillDefinition";
 import { CONSTANTS } from "../constants";
+import { generateValidRandomRoutine } from "../utils/routineValidation";
 
 /**
  * Hook for managing skill definitions loaded from JSON
@@ -73,28 +74,12 @@ export function useRoutine(skillDefinitions: SkillDefinition[]) {
   const randomizeRoutine = () => {
     if (skillDefinitions.length === 0) return;
 
-    const shuffled = [...skillDefinitions].sort(() => Math.random() - 0.5);
-    const selectedSkills = shuffled.slice(
-      0,
-      Math.min(CONSTANTS.UI.MAX_ROUTINE_SKILLS, skillDefinitions.length),
+    const validRoutine = generateValidRandomRoutine(
+      skillDefinitions,
+      CONSTANTS.UI.MAX_ROUTINE_SKILLS,
     );
 
-    // Create skills with random positions from their possible positions
-    const randomSkills = selectedSkills.map((skill) => {
-      if (skill.possiblePositions && skill.possiblePositions.length > 0) {
-        // Randomly select from possible positions
-        const randomPosition =
-          skill.possiblePositions[
-            Math.floor(Math.random() * skill.possiblePositions.length)
-          ];
-        return { ...skill, position: randomPosition };
-      } else {
-        // Use default position if no possible positions available
-        return skill;
-      }
-    });
-
-    setRoutine(randomSkills);
+    setRoutine(validRoutine);
   };
 
   const removeSkill = (index: number) => {

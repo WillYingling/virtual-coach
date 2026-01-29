@@ -44,9 +44,19 @@ export const positions = {
 
 interface SimulatorProps {
   skills: Skill[];
+  skillNames?: string[];
+  jumpPhaseLength?: number;
+  restartKey?: number;
+  onCurrentSkillChange?: (skillIndex: number, skillName?: string) => void;
 }
 
-function Simulator({ skills }: SimulatorProps) {
+function Simulator({
+  skills,
+  skillNames,
+  jumpPhaseLength = 2,
+  restartKey = 0,
+  onCurrentSkillChange,
+}: SimulatorProps) {
   // Rotate camera position 45 degrees around Z axis
   const angle = Math.PI / 4; // 45 degrees
   const x = 0 * Math.cos(angle) - 5 * Math.sin(angle);
@@ -59,7 +69,13 @@ function Simulator({ skills }: SimulatorProps) {
       camera={{ position: [x, y, z], fov: 55 }}
     >
       <OrbitControls target={[0, 5, 0]} enableZoom={true} enablePan={false} />
-      <AthleteController skills={skills} />
+      <AthleteController
+        skills={skills}
+        skillNames={skillNames}
+        jumpPhaseLength={jumpPhaseLength}
+        restartKey={restartKey}
+        onCurrentSkillChange={onCurrentSkillChange}
+      />
       {/* Frame marker at origin for debugging */}
       {/* <FrameMarker position={[0, 0, 0]} size={2} /> */}
       <ambientLight intensity={Math.PI / 2} />
