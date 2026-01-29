@@ -195,13 +195,12 @@ function getPhases(
  */
 export function skillDefinitionToSkill(
   definition: SkillDefinition,
-  renderProps: RenderProperties,
   cumulativeTwist: number = 0,
 ): Skill {
   const keyframes: AthletePosition[] = [];
   const timestamps: number[] = [];
 
-  renderProps = getRenderPropertiesForSkill(definition);
+  let renderProps = getRenderPropertiesForSkill(definition);
 
   // Determine rotation direction based on skill type
   let rotationMultiplier = definition.isBackSkill ? -1 : 1;
