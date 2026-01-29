@@ -51,7 +51,16 @@ export default function RoutineBuilder({
   const hasTriples = routine.some((skill) => skill.flips >= 3);
 
   return (
-    <Card sx={{ flex: 1, minHeight: 300 }}>
+    <Card
+      sx={{
+        flex: { xs: "0 0 auto", md: 1 },
+        height: { xs: "calc(45vh - 20px)", md: "auto" }, // Account for AppBar and spacing
+        minHeight: { xs: 200, md: 300 },
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
       <CardHeader
         title="Routine Builder"
         titleTypographyProps={{ variant: "h6", fontWeight: 600 }}
@@ -90,7 +99,7 @@ export default function RoutineBuilder({
         }
       />
       <Divider />
-      <CardContent>
+      <CardContent sx={{ flex: 1, overflow: "auto", py: 2 }}>
         {routine.length === 0 ? (
           <Typography color="text.secondary" sx={{ fontStyle: "italic" }}>
             No skills in routine. Add skills from the library below.

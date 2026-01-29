@@ -38,14 +38,24 @@ export default function SkillLibrary({
   onSelectPosition,
 }: SkillLibraryProps) {
   return (
-    <Card sx={{ flex: 2, minHeight: 300 }}>
+    <Card
+      sx={{
+        flex: { xs: "1 1 auto", md: 1.5 },
+        height: { xs: "calc(55vh - 20px)", md: "auto" }, // Account for AppBar and spacing
+        minHeight: { xs: 200, md: 300 },
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
       <CardHeader
         title="Skill Library"
         titleTypographyProps={{ variant: "h6", fontWeight: 600 }}
         subheader={`${skillDefinitions.length} skills available`}
+        sx={{ flexShrink: 0 }}
       />
       <Divider />
-      <CardContent>
+      <CardContent sx={{ flex: 1, overflow: "auto", py: { xs: 1, sm: 2 } }}>
         {skillDefinitions.length === 0 ? (
           <Typography color="text.secondary">Loading skills...</Typography>
         ) : (

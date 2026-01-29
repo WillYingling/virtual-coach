@@ -116,7 +116,7 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
   return (
     <group {...props} ref={ref}>
       {/* Frame marker at athlete root */}
-      <FrameMarker position={[0, 0, 0]} size={1} />
+      {/* <FrameMarker position={[0, 0, 0]} size={1} /> */}
       {/* Flip group - applies X rotation around world axis first */}
       <group ref={flipGroupRef}>
         {/* Twist group - applies Y rotation around body axis */}

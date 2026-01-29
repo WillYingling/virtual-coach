@@ -4,14 +4,13 @@
 // Primitive skill definition without timing information
 // Describes what the skill is, not when it happens
 
-export const StartingPosition = {
+export const BedPosition = {
   Standing: "Standing",
   Back: "Back",
   Stomach: "Stomach",
   Seated: "Seated",
 } as const;
-export type StartingPosition =
-  (typeof StartingPosition)[keyof typeof StartingPosition];
+export type BedPosition = (typeof BedPosition)[keyof typeof BedPosition];
 
 export const Position = {
   Straight: "StraightArmsDown",
@@ -22,7 +21,8 @@ export type Position = (typeof Position)[keyof typeof Position];
 
 export interface SkillDefinition {
   name: string;
-  startingPosition: StartingPosition;
+  startingPosition: BedPosition;
+  endingPosition: BedPosition;
   flips: number; // Number of somersaults
   twists: number; // Number of twists
   position: Position;

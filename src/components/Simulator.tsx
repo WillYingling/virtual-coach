@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import FrameMarker from "./FrameMarker";
+// import FrameMarker from "./FrameMarker";
 import AthleteController, { type Skill } from "./AthleteController";
 
 export const positions = {
@@ -61,7 +61,7 @@ function Simulator({ skills }: SimulatorProps) {
       <OrbitControls target={[0, 5, 0]} enableZoom={true} enablePan={false} />
       <AthleteController skills={skills} />
       {/* Frame marker at origin for debugging */}
-      <FrameMarker position={[0, 0, 0]} size={2} />
+      {/* <FrameMarker position={[0, 0, 0]} size={2} /> */}
       <ambientLight intensity={Math.PI / 2} />
     </Canvas>
   );

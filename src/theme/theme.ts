@@ -113,6 +113,15 @@ export const designTokens = {
 // Create the theme
 export const createAppTheme = (): Theme =>
   createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1200,
+        xl: 1536,
+      },
+    },
     palette: {
       mode: "dark",
       primary: {
@@ -181,9 +190,24 @@ export const createAppTheme = (): Theme =>
           },
         },
       },
+      // Override any potential width constraints
+      MuiContainer: {
+        styleOverrides: {
+          root: {
+            maxWidth: "none !important",
+            width: "100% !important",
+          },
+        },
+      },
+      MuiToolbar: {
+        styleOverrides: {
+          root: {
+            maxWidth: "none !important",
+            width: "100% !important",
+          },
+        },
+      },
     },
-
-    spacing: designTokens.spacing.sm, // Base spacing unit
   });
 
 // Helper function to create consistent spacing
