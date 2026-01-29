@@ -7,6 +7,10 @@ import {
   Stack,
   Paper,
   Box,
+  useTheme,
+  useMediaQuery,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import AddIcon from "@mui/icons-material/Add";
@@ -19,7 +23,6 @@ import {
   calculateDifficultyScore,
 } from "../utils/skillUtils";
 import { ActionIconButton } from "./common/ActionIconButton";
-import { SkillChip } from "./common/SkillChip";
 import { CONSTANTS } from "../constants";
 
 interface SkillLibraryProps {
@@ -37,6 +40,8 @@ export default function SkillLibrary({
   onAddToRoutine,
   onSelectPosition,
 }: SkillLibraryProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   return (
     <Card
       sx={{
@@ -86,8 +91,6 @@ export default function SkillLibrary({
                 </Typography>
                 <Stack spacing={1}>
                   {skills.map((def, idx) => {
-                    const hasMultiplePositions =
-                      def.possiblePositions && def.possiblePositions.length > 1;
                     const selectedPosition = selectedPositions[def.name];
 
                     return (
@@ -102,117 +105,124 @@ export default function SkillLibrary({
                         }}
                       >
                         <Stack
-                          direction="row"
-                          alignItems="center"
-                          spacing={1.5}
-                          sx={{ p: 1.5 }}
+                          direction={isMobile ? "column" : "row"}
+                          alignItems={isMobile ? "stretch" : "center"}
+                          spacing={isMobile ? 1 : 1.5}
+                          sx={{ p: isMobile ? 1 : 1.5 }}
                         >
-                          {/* Action Buttons */}
-                          <Stack direction="row" spacing={0.5}>
-                            <ActionIconButton
-                              variant="primary"
-                              size="small"
-                              onClick={() => onPlaySkill(def)}
-                              title="Play skill"
-                            >
-                              <PlayArrowIcon
-                                sx={{ fontSize: CONSTANTS.UI.ICON_SIZE_SMALL }}
-                              />
-                            </ActionIconButton>
-                            <ActionIconButton
-                              variant="success"
-                              size="small"
-                              onClick={() => onAddToRoutine(def)}
-                              title="Add to routine"
-                            >
-                              <AddIcon
-                                sx={{ fontSize: CONSTANTS.UI.ICON_SIZE_SMALL }}
-                              />
-                            </ActionIconButton>
-                          </Stack>
-
-                          {/* Skill Name */}
-                          <Box
-                            sx={{
-                              minWidth: CONSTANTS.UI.MIN_SKILL_NAME_WIDTH,
-                              flexShrink: 0,
-                            }}
-                          >
-                            <Typography
-                              variant="body2"
-                              fontWeight={500}
-                              sx={{ fontSize: "0.875rem" }}
-                            >
-                              {def.name}
-                            </Typography>
-                          </Box>
-
-                          {/* Stats */}
+                          {/* Header Row on Mobile: Action Buttons + Skill Name */}
                           <Stack
                             direction="row"
-                            spacing={1}
-                            sx={{
-                              minWidth: CONSTANTS.UI.MIN_STATS_WIDTH,
-                              flexShrink: 0,
-                            }}
+                            justifyContent="space-between"
+                            alignItems="center"
+                            sx={{ width: "100%" }}
                           >
-                            {def.isBackSkill && (
-                              <SkillChip variant="back" label="Back" />
-                            )}
-                            <SkillChip
-                              variant="twists"
-                              label={`${def.twists}T`}
-                            />
+                            <Stack direction="row" spacing={0.5}>
+                              <ActionIconButton
+                                variant="primary"
+                                size="small"
+                                onClick={() => onPlaySkill(def)}
+                                title="Play skill"
+                              >
+                                <PlayArrowIcon
+                                  sx={{
+                                    fontSize: CONSTANTS.UI.ICON_SIZE_SMALL,
+                                  }}
+                                />
+                              </ActionIconButton>
+                              <ActionIconButton
+                                variant="success"
+                                size="small"
+                                onClick={() => onAddToRoutine(def)}
+                                title="Add to routine"
+                              >
+                                <AddIcon
+                                  sx={{
+                                    fontSize: CONSTANTS.UI.ICON_SIZE_SMALL,
+                                  }}
+                                />
+                              </ActionIconButton>
+                            </Stack>
+
+                            {/* Skill Name */}
+                            <Box
+                              sx={{
+                                minWidth: isMobile
+                                  ? "auto"
+                                  : CONSTANTS.UI.MIN_SKILL_NAME_WIDTH,
+                                flexShrink: 0,
+                                flex: isMobile ? 1 : "auto",
+                                ml: isMobile ? 1 : 0,
+                              }}
+                            >
+                              <Typography
+                                variant="body2"
+                                fontWeight={500}
+                                sx={{
+                                  fontSize: "0.875rem",
+                                  textAlign: isMobile ? "right" : "left",
+                                  margin: 1,
+                                }}
+                              >
+                                {def.name}
+                              </Typography>
+                            </Box>
                           </Stack>
 
-                          {/* Difficulty & Position */}
-                          <Box sx={{ flex: 1, minWidth: 0 }}>
-                            {hasMultiplePositions ? (
+                          {/* Stats and Position Row */}
+                          <Stack
+                            direction={isMobile ? "column" : "row"}
+                            spacing={isMobile ? 1 : 2}
+                            alignItems={isMobile ? "stretch" : "center"}
+                            sx={{ width: "100%" }}
+                          >
+                            {/* Difficulty & Position */}
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
                               <Stack
                                 direction="row"
                                 spacing={0.5}
                                 flexWrap="wrap"
+                                justifyContent={
+                                  isMobile ? "flex-start" : "flex-end"
+                                }
+                                sx={{
+                                  gap: 0.5,
+                                  "& > *": {
+                                    minWidth: isMobile ? "auto" : "initial",
+                                    flexShrink: 0,
+                                  },
+                                }}
                               >
-                                {def.possiblePositions!.map((pos) => {
-                                  const isSelected = selectedPosition === pos;
-                                  const skillWithPosition = {
-                                    ...def,
-                                    position: pos,
-                                  };
-                                  const difficulty =
-                                    calculateDifficultyScore(skillWithPosition);
+                                <ToggleButtonGroup
+                                  value={selectedPosition}
+                                  exclusive
+                                  onChange={(_, value) => {
+                                    if (value !== null) {
+                                      onSelectPosition(def.name, value);
+                                    }
+                                  }}
+                                >
+                                  {def.possiblePositions!.map((pos) => {
+                                    const skillWithPosition = {
+                                      ...def,
+                                      position: pos,
+                                    };
+                                    const difficulty =
+                                      calculateDifficultyScore(
+                                        skillWithPosition,
+                                      );
 
-                                  return (
-                                    <SkillChip
-                                      key={pos}
-                                      variant={
-                                        isSelected ? "selected" : "unselected"
-                                      }
-                                      label={`${formatPositionDisplay(pos)}: ${difficulty}`}
-                                      clickable
-                                      onClick={() =>
-                                        onSelectPosition(def.name, pos)
-                                      }
-                                      sx={{
-                                        cursor: "pointer",
-                                        transition: "all 0.2s ease-in-out",
-                                        "&:hover": {
-                                          transform: isSelected
-                                            ? "scale(1.05)"
-                                            : "scale(1.02)",
-                                        },
-                                      }}
-                                    />
-                                  );
-                                })}
+                                    return (
+                                      <ToggleButton value={pos}>
+                                        {formatPositionDisplay(pos)} :{" "}
+                                        {difficulty.toFixed(1)}
+                                      </ToggleButton>
+                                    );
+                                  })}
+                                </ToggleButtonGroup>
                               </Stack>
-                            ) : (
-                              <SkillChip
-                                variant="difficulty"
-                                label={`${formatPositionDisplay(def.position)}: ${calculateDifficultyScore(def)} DD`}
-                              />
-                            )}
-                          </Box>
+                            </Box>
+                          </Stack>
                         </Stack>
                       </Paper>
                     );

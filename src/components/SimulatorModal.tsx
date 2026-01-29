@@ -9,6 +9,8 @@ import {
   Button,
   Slider,
   Box,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
@@ -36,6 +38,9 @@ export default function SimulatorModal({
     skillNames[0] || "",
   );
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const handleCurrentSkillChange = (skillIndex: number, skillName?: string) => {
     setCurrentSkillIndex(skillIndex);
     setCurrentSkillName(skillName || "");
@@ -60,10 +65,11 @@ export default function SimulatorModal({
       onClose={onClose}
       maxWidth="lg"
       fullWidth
+      fullScreen={isMobile}
       PaperProps={{
         sx: {
-          height: "80vh",
-          maxHeight: "80vh",
+          height: isMobile ? "100vh" : "80vh",
+          maxHeight: isMobile ? "100vh" : "80vh",
         },
       }}
     >
@@ -86,20 +92,33 @@ export default function SimulatorModal({
       >
         {/* Control Panel */}
         <Box
-          sx={{ p: 2, borderBottom: 1, borderColor: "divider", flexShrink: 0 }}
+          sx={{
+            p: isMobile ? 1.5 : 2,
+            borderBottom: 1,
+            borderColor: "divider",
+            flexShrink: 0,
+          }}
         >
-          <Stack direction="row" spacing={3} alignItems="center">
+          <Stack
+            direction={isMobile ? "column" : "row"}
+            spacing={isMobile ? 2 : 3}
+            alignItems={isMobile ? "stretch" : "center"}
+          >
             <Button
               variant="outlined"
               startIcon={<RestartAltIcon />}
               onClick={handleRestart}
               size="small"
+              sx={{
+                alignSelf: isMobile ? "flex-start" : "auto",
+                maxWidth: isMobile ? "150px" : "auto",
+              }}
             >
               Restart
             </Button>
 
             {/* Current Skill Display */}
-            <Box sx={{ minWidth: 200 }}>
+            <Box sx={{ minWidth: isMobile ? "auto" : 200 }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
                 Current Skill
               </Typography>
@@ -110,7 +129,7 @@ export default function SimulatorModal({
               </Typography>
             </Box>
 
-            <Box sx={{ minWidth: 200 }}>
+            <Box sx={{ minWidth: isMobile ? "auto" : 200 }}>
               <Typography variant="body2" gutterBottom>
                 Air Time
               </Typography>
@@ -121,7 +140,10 @@ export default function SimulatorModal({
                 max={3.2}
                 step={0.1}
                 size="small"
-                sx={{ width: 180 }}
+                sx={{
+                  width: isMobile ? "100%" : 180,
+                  maxWidth: isMobile ? "300px" : "180px",
+                }}
               />
             </Box>
           </Stack>

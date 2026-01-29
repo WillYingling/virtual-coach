@@ -7,7 +7,11 @@ import { CONSTANTS } from "../constants";
  */
 export function formatPositionDisplay(position: Position): string {
   if (position === Position.Straight) {
-    return "Straight";
+    return "/";
+  } else if (position === Position.Pike) {
+    return "<";
+  } else if (position === Position.Tuck) {
+    return "o";
   }
   return position;
 }
