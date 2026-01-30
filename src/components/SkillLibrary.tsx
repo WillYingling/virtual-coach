@@ -53,16 +53,14 @@ const SkillLibrary = memo(function SkillLibrary({
   // Memoize grouped and sorted skills to prevent recalculation on every render
   const categorizedSkills = useMemo(
     () =>
-      sortFlipCategories(
-        Object.entries(groupSkillsByFlips(skillDefinitions)),
-      ),
+      sortFlipCategories(Object.entries(groupSkillsByFlips(skillDefinitions))),
     [skillDefinitions],
   );
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => ({
       ...prev,
-      [category]: !prev[category],
+      [category]: prev[category] === undefined ? false : !prev[category],
     }));
   };
 
