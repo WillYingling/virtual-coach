@@ -43,6 +43,8 @@ export const positions = {
   },
 };
 
+const trampolineHeight = 1.6;
+
 interface SimulatorProps {
   skills: Skill[];
   skillNames?: string[];
@@ -80,14 +82,18 @@ function Simulator({
       <directionalLight position={[10, 20, 10]} intensity={1} />
 
       {/* Ground plane - positioned below the trampoline */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -trampolineHeight, 0]}
+        receiveShadow
+      >
         <planeGeometry args={[100, 100]} />
         <meshStandardMaterial color="#4a7c59" side={THREE.DoubleSide} />
       </mesh>
 
       {/* Grid for spatial reference - positioned below trampoline */}
       <Grid
-        position={[0, -0.99, 0]}
+        position={[0, -trampolineHeight + 0.01, 0]}
         args={[100, 100]}
         cellSize={2}
         cellThickness={0.5}

@@ -10,6 +10,9 @@ import { skillDefinitionToSkill } from "../utils/skillConverter";
 export function useSimulator() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [skillNames, setSkillNames] = useState<string[]>([]);
+  const [skillDefinitions, setSkillDefinitions] = useState<SkillDefinition[]>(
+    [],
+  );
   const [simulatorOpen, setSimulatorOpen] = useState(false);
 
   const playSkill = (
@@ -24,6 +27,7 @@ export function useSimulator() {
     const skill = skillDefinitionToSkill(skillToPlay);
     setSkills([skill]);
     setSkillNames([skillToPlay.name]);
+    setSkillDefinitions([skillToPlay]);
     setSimulatorOpen(true);
   };
 
@@ -37,6 +41,7 @@ export function useSimulator() {
       });
       setSkills(animatedSkills);
       setSkillNames(routine.map((def) => def.name));
+      setSkillDefinitions(routine);
       setSimulatorOpen(true);
     }
   };
@@ -45,11 +50,13 @@ export function useSimulator() {
     setSimulatorOpen(false);
     setSkills([]);
     setSkillNames([]);
+    setSkillDefinitions([]);
   };
 
   return {
     skills,
     skillNames,
+    skillDefinitions,
     simulatorOpen,
     playSkill,
     playRoutine,

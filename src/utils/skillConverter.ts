@@ -36,7 +36,7 @@ const startingPositionRotations = {
   [BedPosition.Seated]: 0, // Quarter flip (90°) from standing
 };
 
-function getRenderPropertiesForSkill(
+export function getRenderPropertiesForSkill(
   definition: SkillDefinition,
 ): RenderProperties {
   // Base stall and kickout rotations
@@ -53,8 +53,8 @@ function getRenderPropertiesForSkill(
   }
 
   if (definition.isBackSkill) {
-    stallRotation /= 2;
-    kickoutRotation += 0.125;
+    stallRotation /= 4;
+    kickoutRotation += 0.15;
   }
 
   if (definition.startingPosition === BedPosition.Back) {
@@ -184,11 +184,14 @@ function getPhases(
 export function skillDefinitionToSkill(
   definition: SkillDefinition,
   cumulativeTwist: number = 0,
+  renderProps?: RenderProperties,
 ): Skill {
   const keyframes: AthletePosition[] = [];
   const timestamps: number[] = [];
 
-  let renderProps = getRenderPropertiesForSkill(definition);
+  if (!renderProps) {
+    renderProps = getRenderPropertiesForSkill(definition);
+  }
 
   // Determine rotation direction based on skill type
   let rotationMultiplier = definition.isBackSkill ? -1 : 1;

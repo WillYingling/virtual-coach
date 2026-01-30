@@ -22,6 +22,7 @@ function App() {
   const {
     skills,
     skillNames,
+    skillDefinitions: simulatorSkillDefinitions,
     simulatorOpen,
     playSkill,
     playRoutine,
@@ -147,6 +148,7 @@ function App() {
       <SimulatorModal
         open={simulatorOpen}
         skills={skills}
+        skillDefinitions={simulatorSkillDefinitions}
         skillNames={skillNames}
         onClose={closeSimulator}
       />

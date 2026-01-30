@@ -51,7 +51,7 @@ function AthleteController({
   const firstFrameRef = useRef<boolean>(true);
 
   const JumpPhase = jumpPhaseLength;
-  const BouncePhase = JumpPhase / 10;
+  const BouncePhase = 0.3;
   const SkillCycleTime = JumpPhase + BouncePhase;
   const TotalCycleTime = SkillCycleTime * skills.length;
   const Gravity = -9.81; // m/s^2

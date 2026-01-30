@@ -16,20 +16,30 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import { useState } from "react";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useState, useCallback } from "react";
 import Simulator from "./Simulator";
 import type { Skill } from "./AthleteController";
+import type { RenderProperties } from "../utils/skillConverter";
+import {
+  skillDefinitionToSkill,
+  getRenderPropertiesForSkill,
+} from "../utils/skillConverter";
+import type { SkillDefinition } from "../models/SkillDefinition";
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 
 interface SimulatorModalProps {
   open: boolean;
   skills: Skill[];
+  skillDefinitions?: SkillDefinition[];
   skillNames?: string[];
   onClose: () => void;
 }
 
 export default function SimulatorModal({
   open,
-  skills,
+  skills: initialSkills,
+  skillDefinitions = [],
   skillNames = [],
   onClose,
 }: SimulatorModalProps) {
@@ -41,6 +51,88 @@ export default function SimulatorModal({
   );
   const [modalKey, setModalKey] = useState(0);
   const [fpvEnabled, setFpvEnabled] = useState(false);
+  const [advancedExpanded, setAdvancedExpanded] = useState(false);
+
+  // Advanced render properties - initialized with lazy computation
+  const [renderProps, setRenderProps] = useState<RenderProperties>(() => {
+    if (skillDefinitions.length > 0) {
+      return getRenderPropertiesForSkill(skillDefinitions[0]);
+    }
+    return {
+      stallRotation: 0.125,
+      kickoutRotation: 0.5,
+      positionTransitionDuration: 0.15,
+    };
+  });
+
+  // Helper function to generate skills from definitions
+  const generateSkillsFromDefinitions = useCallback(
+    (renderProperties: RenderProperties) => {
+      if (skillDefinitions.length > 0) {
+        let cumulativeTwist = 0;
+        const newSkills: Skill[] = [];
+
+        for (const definition of skillDefinitions) {
+          const skill = skillDefinitionToSkill(
+            definition,
+            cumulativeTwist,
+            renderProperties,
+          );
+          newSkills.push(skill);
+
+          // Update cumulative twist for next skill
+          if (skill.positions && skill.positions.length > 0) {
+            cumulativeTwist +=
+              skill.positions[skill.positions.length - 1].twist;
+          }
+        }
+
+        return newSkills;
+      }
+      return initialSkills;
+    },
+    [skillDefinitions, initialSkills],
+  );
+
+  // Regenerated skills based on render properties
+  const [skills, setSkills] = useState<Skill[]>(() => {
+    // Initialize skills with proper render properties if skill definitions are available
+    if (skillDefinitions.length > 0) {
+      const initialProps = getRenderPropertiesForSkill(skillDefinitions[0]);
+      return generateSkillsFromDefinitions(initialProps);
+    }
+    return initialSkills;
+  });
+
+  // Track if we need to update render props for new skill definitions
+  const [lastSkillDefinitions, setLastSkillDefinitions] =
+    useState(skillDefinitions);
+
+  // Check if skill definitions have changed and update accordingly
+  if (skillDefinitions !== lastSkillDefinitions) {
+    setLastSkillDefinitions(skillDefinitions);
+
+    if (skillDefinitions.length > 0) {
+      const newRenderProps = getRenderPropertiesForSkill(skillDefinitions[0]);
+      const newSkills = generateSkillsFromDefinitions(newRenderProps);
+
+      // Update both render props and skills
+      setRenderProps(newRenderProps);
+      setSkills(newSkills);
+      setRestartKey((prev) => prev + 1); // Restart animation
+    } else {
+      setSkills(initialSkills);
+    }
+  }
+
+  const regenerateSkills = useCallback(
+    (newRenderProps: RenderProperties) => {
+      const newSkills = generateSkillsFromDefinitions(newRenderProps);
+      setSkills(newSkills);
+      setRestartKey((prev) => prev + 1); // Restart the animation with new skills
+    },
+    [generateSkillsFromDefinitions],
+  );
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -68,6 +160,15 @@ export default function SimulatorModal({
     newValue: number | number[],
   ) => {
     setJumpPhaseLength(newValue as number);
+  };
+
+  const handleRenderPropChange = (
+    property: keyof RenderProperties,
+    value: number,
+  ) => {
+    const newRenderProps = { ...renderProps, [property]: value };
+    setRenderProps(newRenderProps);
+    regenerateSkills(newRenderProps);
   };
   return (
     <Dialog
@@ -169,6 +270,107 @@ export default function SimulatorModal({
               />
             </Box>
           </Stack>
+
+          {/* Advanced Controls */}
+          {skillDefinitions.length > 0 && (
+            <Accordion
+              expanded={advancedExpanded}
+              onChange={(e, isExpanded) => setAdvancedExpanded(isExpanded)}
+              sx={{ mt: 2, boxShadow: 1 }}
+            >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="subtitle2">
+                  Advanced Render Properties
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Stack spacing={3}>
+                  <Box>
+                    <Typography variant="body2" gutterBottom>
+                      Stall Rotation ({renderProps.stallRotation.toFixed(3)})
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      gutterBottom
+                    >
+                      Rotation amount during the stall phase of the skill
+                    </Typography>
+                    <Slider
+                      value={renderProps.stallRotation}
+                      onChange={(e, value) =>
+                        handleRenderPropChange("stallRotation", value as number)
+                      }
+                      min={0}
+                      max={0.5}
+                      step={0.01}
+                      size="small"
+                      sx={{ maxWidth: 300 }}
+                    />
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" gutterBottom>
+                      Kickout Rotation ({renderProps.kickoutRotation.toFixed(3)}
+                      )
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      gutterBottom
+                    >
+                      Rotation amount during the kickout phase of the skill
+                    </Typography>
+                    <Slider
+                      value={renderProps.kickoutRotation}
+                      onChange={(e, value) =>
+                        handleRenderPropChange(
+                          "kickoutRotation",
+                          value as number,
+                        )
+                      }
+                      min={0.1}
+                      max={0.75}
+                      step={0.01}
+                      size="small"
+                      sx={{ maxWidth: 300 }}
+                    />
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" gutterBottom>
+                      Position Transition Duration (
+                      {renderProps.positionTransitionDuration.toFixed(3)})
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      gutterBottom
+                    >
+                      Duration of transition into and out of the skill position
+                    </Typography>
+                    <Slider
+                      value={renderProps.positionTransitionDuration}
+                      onChange={(e, value) =>
+                        handleRenderPropChange(
+                          "positionTransitionDuration",
+                          value as number,
+                        )
+                      }
+                      min={0.05}
+                      max={0.4}
+                      step={0.01}
+                      size="small"
+                      sx={{ maxWidth: 300 }}
+                    />
+                  </Box>
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
+          )}
         </Box>
 
         {/* Simulator */}

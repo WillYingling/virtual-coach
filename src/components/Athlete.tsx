@@ -19,6 +19,8 @@ export interface AthletePosition {
   };
 }
 
+const fpvDownwardLookAngle = Math.PI / 6;
+
 interface AthleteProps {
   athletePosition?: AthletePosition;
   fpvEnabled?: boolean;
@@ -188,12 +190,12 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
 
             {/* Head */}
             <group position={[0, torsoLength + gap, 0]}>
-              <FrameMarker position={[0, 0, 0]} size={1} />
+              <FrameMarker position={[0, 0, 0]} size={0} />
               <PerspectiveCamera
                 makeDefault={fpvEnabled}
                 fov={fpvEnabled ? 90 : 55}
                 position={[0, headSize / 2, legDepth / 2 + 0.05]}
-                rotation={[0, Math.PI, 0]}
+                rotation={[fpvDownwardLookAngle, Math.PI, 0]}
               />
               <mesh
                 position={[0, headSize / 2, 0]}
