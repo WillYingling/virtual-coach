@@ -407,7 +407,7 @@
     "isBackSkill": true,
     "position": "StraightArmsDown",
     "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Stomach"
+    "endingPosition": "Back"
   },
   {
     "name": "2 3/4 Back with 1/2 Twist",
@@ -417,7 +417,7 @@
     "isBackSkill": true,
     "position": "StraightArmsDown",
     "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Stomach"
+    "endingPosition": "Back"
   },
   {
     "name": "Pullover",

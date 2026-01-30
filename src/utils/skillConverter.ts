@@ -115,7 +115,6 @@ function getPhases(
   // How much of the flip is done in the position phase
   let positionPhaseRotation =
     definition.flips - renderProps.kickoutRotation - renderProps.stallRotation;
-  console.log("Position phase rotation:", positionPhaseRotation);
 
   // Calculate relative durations
   let positionRelativeSpeed = relativePositionSpeeds[definition.position];
@@ -124,12 +123,6 @@ function getPhases(
   let kickoutRelativeDuration = renderProps.kickoutRotation; // Assuming speed of 1 for kickout
   let flipRelativeDuration =
     positionRelativeDuration + stallRelativeDuration + kickoutRelativeDuration;
-  console.log("Relative durations:", {
-    positionRelativeDuration,
-    stallRelativeDuration,
-    kickoutRelativeDuration,
-    flipRelativeDuration,
-  });
 
   let normalizedStallDuration = stallRelativeDuration / flipRelativeDuration;
   let normalizedPositionDuration =
@@ -156,11 +149,6 @@ function getPhases(
     normalizedPositionSpeed * renderProps.positionTransitionDuration;
   let enterPositionRotation =
     renderProps.stallRotation + enterPositionRotationDelta;
-  console.log("Enter position data:", {
-    enterPositionRotation,
-    enterPositionRotationDelta,
-    normalizedPositionSpeed,
-  });
 
   let endPositionRotation = renderProps.stallRotation + positionPhaseRotation;
 
@@ -237,7 +225,7 @@ export function skillDefinitionToSkill(
     });
     timestamps.push(timePhases[i]);
   }
-  console.log("Generated skill:", { definition, keyframes, timestamps });
+  console.log("Skill conversion:", { definition, keyframes, timestamps });
   return {
     positions: keyframes,
     timestamps: timestamps,
