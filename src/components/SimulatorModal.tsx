@@ -262,7 +262,7 @@ export default function SimulatorModal({
                 control={
                   <Switch
                     checked={fpvEnabled}
-                    onChange={(e) => setFpvEnabled(e.target.checked)}
+                    onChange={(_, checked) => setFpvEnabled(checked)}
                     size="small"
                   />
                 }
@@ -275,7 +275,7 @@ export default function SimulatorModal({
           {skillDefinitions.length > 0 && (
             <Accordion
               expanded={advancedExpanded}
-              onChange={(e, isExpanded) => setAdvancedExpanded(isExpanded)}
+              onChange={(_, isExpanded) => setAdvancedExpanded(isExpanded)}
               sx={{ mt: 2, boxShadow: 1 }}
             >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -299,7 +299,7 @@ export default function SimulatorModal({
                     </Typography>
                     <Slider
                       value={renderProps.stallRotation}
-                      onChange={(e, value) =>
+                      onChange={(_, value) =>
                         handleRenderPropChange("stallRotation", value as number)
                       }
                       min={0}
@@ -325,7 +325,7 @@ export default function SimulatorModal({
                     </Typography>
                     <Slider
                       value={renderProps.kickoutRotation}
-                      onChange={(e, value) =>
+                      onChange={(_, value) =>
                         handleRenderPropChange(
                           "kickoutRotation",
                           value as number,
@@ -354,7 +354,7 @@ export default function SimulatorModal({
                     </Typography>
                     <Slider
                       value={renderProps.positionTransitionDuration}
-                      onChange={(e, value) =>
+                      onChange={(_, value) =>
                         handleRenderPropChange(
                           "positionTransitionDuration",
                           value as number,
