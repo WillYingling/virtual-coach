@@ -1,4 +1,4 @@
-import { Stack, AppBar, Toolbar, Typography, Box } from "@mui/material";
+import { Stack, AppBar, Toolbar, Typography, Box, Link } from "@mui/material";
 import SportsGymnasticsIcon from "@mui/icons-material/SportsGymnastics";
 import { useCallback } from "react";
 import RoutineBuilder from "./components/RoutineBuilder";
@@ -80,15 +80,43 @@ function App() {
               display: "flex",
               alignItems: "center",
               width: "100%",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: { xs: 0.5, sm: 0 },
             }}
           >
-            <SportsGymnasticsIcon sx={{ mr: 2 }} />
+            <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+              <SportsGymnasticsIcon sx={{ mr: 2 }} />
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ fontWeight: 600 }}
+              >
+                Trampoline Skill Generator
+              </Typography>
+            </Box>
             <Typography
-              variant="h6"
+              variant="body2"
               component="div"
-              sx={{ flexGrow: 1, fontWeight: 600 }}
+              sx={{ 
+                fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                pr: { sm: 2 }
+              }}
             >
-              Trampoline Skill Generator
+              Presented by{" "}
+              <Link
+                href="https://www.freesolotrampoline.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  color: "inherit",
+                  textDecoration: "underline",
+                  "&:hover": {
+                    opacity: 0.8,
+                  },
+                }}
+              >
+                Free Solo Trampoline
+              </Link>
             </Typography>
           </Box>
         </Toolbar>
