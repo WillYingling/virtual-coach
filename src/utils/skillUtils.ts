@@ -1,6 +1,7 @@
 import { Position } from "../models/SkillDefinition";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import { CONSTANTS } from "../constants";
+import { totalTwists } from "./skillConverter";
 
 /**
  * Display position names in a user-friendly way
@@ -123,7 +124,7 @@ function rotationScore(skill: SkillDefinition): number {
 
 function twistScore(skill: SkillDefinition): number {
   let score = 0;
-  let halfTwists = Math.floor(skill.twists / 0.5);
+  let halfTwists = Math.floor(totalTwists(skill) / 0.5);
   score += halfTwists * 0.1; // 1 point per half twist
   if (skill.flips >= 4) {
     score *= 3; // Bonus for twists on quadruple flips
@@ -141,7 +142,7 @@ function positionScore(skill: SkillDefinition): number {
   }
 
   let flips = Math.floor(skill.flips);
-  if (flips === 1 && skill.twists !== 0) {
+  if (flips === 1 && totalTwists(skill) !== 0) {
     return 0; // No position score for 1 flip with twists
   }
 
@@ -163,7 +164,7 @@ function getSkillCacheKey(skill: SkillDefinition): string {
 export function calculateDifficultyScore(skill: SkillDefinition): number {
   if (
     skill.flips == 0 &&
-    skill.twists == 0 &&
+    totalTwists(skill) == 0 &&
     skill.position === Position.Straight
   ) {
     return 0; // No difficulty for straight jumps

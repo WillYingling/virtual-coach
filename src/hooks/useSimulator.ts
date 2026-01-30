@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Skill } from "../components/AthleteController";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import { Position } from "../models/SkillDefinition";
-import { skillDefinitionToSkill } from "../utils/skillConverter";
+import { skillDefinitionToSkill, totalTwists } from "../utils/skillConverter";
 
 /**
  * Hook for managing simulator state and actions
@@ -36,7 +36,7 @@ export function useSimulator() {
       let cumulativeTwist = 0;
       const animatedSkills = routine.map((def) => {
         const skill = skillDefinitionToSkill(def, cumulativeTwist);
-        cumulativeTwist += def.twists;
+        cumulativeTwist += totalTwists(def);
         return skill;
       });
       setSkills(animatedSkills);
