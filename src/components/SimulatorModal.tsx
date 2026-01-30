@@ -11,6 +11,8 @@ import {
   Box,
   useTheme,
   useMediaQuery,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
@@ -37,6 +39,8 @@ export default function SimulatorModal({
   const [currentSkillName, setCurrentSkillName] = useState<string>(
     skillNames[0] || "",
   );
+  const [modalKey, setModalKey] = useState(0);
+  const [fpvEnabled, setFpvEnabled] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -53,6 +57,12 @@ export default function SimulatorModal({
     setCurrentSkillName(skillNames[0] || "");
   };
 
+  const handleClose = () => {
+    // Reset modal key to force remount next time it opens
+    setModalKey((prev) => prev + 1);
+    onClose();
+  };
+
   const handleJumpPhaseLengthChange = (
     _event: Event,
     newValue: number | number[],
@@ -62,7 +72,7 @@ export default function SimulatorModal({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="lg"
       fullWidth
       fullScreen={isMobile}
@@ -82,7 +92,7 @@ export default function SimulatorModal({
           <Typography variant="h6" component="div">
             3D Simulator
           </Typography>
-          <IconButton onClick={onClose} size="small">
+          <IconButton onClick={handleClose} size="small">
             <CloseIcon />
           </IconButton>
         </Stack>
@@ -146,22 +156,36 @@ export default function SimulatorModal({
                 }}
               />
             </Box>
+            <Box>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={fpvEnabled}
+                    onChange={(e) => setFpvEnabled(e.target.checked)}
+                    size="small"
+                  />
+                }
+                label="First Person View"
+              />
+            </Box>
           </Stack>
         </Box>
 
         {/* Simulator */}
         <Box sx={{ flex: 1, minHeight: 0 }}>
           <Simulator
+            key={modalKey}
             skills={skills}
             skillNames={skillNames}
             jumpPhaseLength={jumpPhaseLength}
             restartKey={restartKey}
             onCurrentSkillChange={handleCurrentSkillChange}
+            fpvEnabled={fpvEnabled}
           />
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} startIcon={<CloseIcon />}>
+        <Button onClick={handleClose} startIcon={<CloseIcon />}>
           Close
         </Button>
       </DialogActions>

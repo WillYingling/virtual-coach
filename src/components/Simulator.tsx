@@ -1,7 +1,8 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Grid } from "@react-three/drei";
 // import FrameMarker from "./FrameMarker";
 import AthleteController, { type Skill } from "./AthleteController";
+import * as THREE from "three";
 
 export const positions = {
   Tuck: {
@@ -48,6 +49,7 @@ interface SimulatorProps {
   jumpPhaseLength?: number;
   restartKey?: number;
   onCurrentSkillChange?: (skillIndex: number, skillName?: string) => void;
+  fpvEnabled?: boolean;
 }
 
 function Simulator({
@@ -56,6 +58,7 @@ function Simulator({
   jumpPhaseLength = 2,
   restartKey = 0,
   onCurrentSkillChange,
+  fpvEnabled = false,
 }: SimulatorProps) {
   // Rotate camera position 45 degrees around Z axis
   const angle = Math.PI / 4; // 45 degrees
@@ -68,17 +71,60 @@ function Simulator({
       style={{ width: "100%", height: "500px", borderRadius: "8px" }}
       camera={{ position: [x, y, z], fov: 55 }}
     >
-      <OrbitControls target={[0, 5, 0]} enableZoom={true} enablePan={false} />
+      {/* Sky background */}
+      <color attach="background" args={["#87CEEB"]} />
+      <fog attach="fog" args={["#87CEEB", 20, 60]} />
+
+      {/* Lighting */}
+      <ambientLight intensity={Math.PI / 2} />
+      <directionalLight position={[10, 20, 10]} intensity={1} />
+
+      {/* Ground plane - positioned below the trampoline */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial color="#4a7c59" side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Grid for spatial reference - positioned below trampoline */}
+      <Grid
+        position={[0, -0.99, 0]}
+        args={[100, 100]}
+        cellSize={2}
+        cellThickness={0.5}
+        cellColor="#ffffff"
+        sectionSize={10}
+        sectionThickness={1}
+        sectionColor="#3a5a49"
+        fadeDistance={50}
+        fadeStrength={1}
+        followCamera={false}
+        infiniteGrid={false}
+      />
+
+      {/* Directional markers - colored walls to show front (gold) and back (silver) */}
+      <mesh position={[0, 3, -20]} receiveShadow>
+        <boxGeometry args={[40, 6, 1]} />
+        <meshStandardMaterial color="#d4af37" />
+      </mesh>
+
+      <mesh position={[0, 3, 20]} receiveShadow>
+        <boxGeometry args={[40, 6, 1]} />
+        <meshStandardMaterial color="#c0c0c0" />
+      </mesh>
+
+      {!fpvEnabled && (
+        <OrbitControls target={[0, 5, 0]} enableZoom={true} enablePan={false} />
+      )}
       <AthleteController
         skills={skills}
         skillNames={skillNames}
         jumpPhaseLength={jumpPhaseLength}
         restartKey={restartKey}
         onCurrentSkillChange={onCurrentSkillChange}
+        fpvEnabled={fpvEnabled}
       />
       {/* Frame marker at origin for debugging */}
       {/* <FrameMarker position={[0, 0, 0]} size={2} /> */}
-      <ambientLight intensity={Math.PI / 2} />
     </Canvas>
   );
 }

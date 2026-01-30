@@ -1,7 +1,8 @@
 import { forwardRef, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-//import FrameMarker from "./FrameMarker";
+import FrameMarker from "./FrameMarker";
+import { PerspectiveCamera } from "@react-three/drei";
 
 // Complete athlete position state
 export interface AthletePosition {
@@ -20,9 +21,11 @@ export interface AthletePosition {
 
 interface AthleteProps {
   athletePosition?: AthletePosition;
+  fpvEnabled?: boolean;
 }
 
 const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
+  const { fpvEnabled = false } = props;
   // Refs for animated joints
   const leftShoulderRef = useRef<THREE.Group>(null);
   const rightShoulderRef = useRef<THREE.Group>(null);
@@ -185,6 +188,13 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
 
             {/* Head */}
             <group position={[0, torsoLength + gap, 0]}>
+              <FrameMarker position={[0, 0, 0]} size={1} />
+              <PerspectiveCamera
+                makeDefault={fpvEnabled}
+                fov={fpvEnabled ? 90 : 55}
+                position={[0, headSize / 2, legDepth / 2 + 0.05]}
+                rotation={[0, Math.PI, 0]}
+              />
               <mesh
                 position={[0, headSize / 2, 0]}
                 renderOrder={1}

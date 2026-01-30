@@ -18,6 +18,7 @@ interface AthleteControllerProps {
   jumpPhaseLength?: number;
   restartKey?: number;
   onCurrentSkillChange?: (skillIndex: number, skillName?: string) => void;
+  fpvEnabled?: boolean;
 }
 
 function AthleteController({
@@ -26,6 +27,7 @@ function AthleteController({
   jumpPhaseLength = 2,
   restartKey = 0,
   onCurrentSkillChange,
+  fpvEnabled = false,
 }: AthleteControllerProps) {
   const athleteRef = useRef<THREE.Group>(null);
   const athletePositionRef = useRef<AthletePosition>({
@@ -304,7 +306,11 @@ function AthleteController({
 
   return (
     <>
-      <Athlete ref={athleteRef} athletePosition={athletePositionRef.current} />
+      <Athlete
+        ref={athleteRef}
+        athletePosition={athletePositionRef.current}
+        fpvEnabled={fpvEnabled}
+      />
       <Trampoline athleteRef={athleteRef} />
     </>
   );
