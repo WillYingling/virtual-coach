@@ -150,6 +150,12 @@ function getPhases(
   let endExitPositionTimestamp =
     endPositionTimestamp + renderProps.positionTransitionDuration;
 
+  endEnterPositionTimestamp = Math.min(
+    endEnterPositionTimestamp,
+    endPositionTimestamp,
+  );
+  endExitPositionTimestamp = Math.min(endExitPositionTimestamp, 1);
+
   let normalizedPositionSpeed =
     positionPhaseRotation / normalizedPositionDuration;
   let enterPositionRotationDelta =
@@ -159,11 +165,15 @@ function getPhases(
 
   let endPositionRotation = renderProps.stallRotation + positionPhaseRotation;
 
+  enterPositionRotation = Math.min(enterPositionRotation, endPositionRotation);
+
   let normalizedKickoutSpeed =
     renderProps.kickoutRotation / normalizedKickoutDuration;
   let exitKickoutRotation =
     endPositionRotation +
     normalizedKickoutSpeed * renderProps.positionTransitionDuration;
+
+  exitKickoutRotation = Math.min(exitKickoutRotation, definition.flips); // Prevent overshoot
 
   return {
     rotationPhases: [

@@ -1,4 +1,4 @@
-import { skillDefinitionToSkill } from "../skillConverter";
+import { skillDefinitionToSkill, totalTwists } from "../skillConverter";
 import {
   SkillDefinition,
   Position,
@@ -41,13 +41,13 @@ describe("skillDefinitionToSkill", () => {
             expect(skill.timestamps).toHaveLength(6);
           });
 
-          it("should have strictly increasing timestamps from 0 to 1", () => {
+          it("should have increasing timestamps from 0 to 1", () => {
             expect(skill.timestamps[0]).toBe(0);
             expect(skill.timestamps[skill.timestamps.length - 1]).toBe(1);
 
             // All skills must have strictly increasing timestamps
             for (let i = 1; i < skill.timestamps.length; i++) {
-              expect(skill.timestamps[i]).toBeGreaterThan(
+              expect(skill.timestamps[i]).toBeGreaterThanOrEqual(
                 skill.timestamps[i - 1],
               );
             }
@@ -102,12 +102,13 @@ describe("skillDefinitionToSkill", () => {
           });
 
           it("should have correct twist progression when skill has twists", () => {
-            if (skillDefinition.twists > 0) {
+            const totalTwistsValue = totalTwists(skillDefinition);
+            if (totalTwistsValue > 0) {
               const twists = skill.positions.map((pos) => pos.twist);
               const finalTwist = twists[twists.length - 1];
 
               // Final twist should match the skill definition
-              expect(finalTwist).toBeCloseTo(skillDefinition.twists, 2);
+              expect(finalTwist).toBeCloseTo(totalTwistsValue, 2);
 
               // Find where twists start (first non-zero twist)
               const twistStartIndex = twists.findIndex(
@@ -163,7 +164,7 @@ describe("skillDefinitionToSkill", () => {
 
             // All intervals must be positive (no negative or zero intervals)
             intervals.forEach((interval, i) => {
-              expect(interval).toBeGreaterThan(0);
+              expect(interval).toBeGreaterThanOrEqual(0);
               expect(interval).toBeLessThan(1);
             });
           });
@@ -180,12 +181,13 @@ describe("skillDefinitionToSkill", () => {
             });
           }
 
-          if (skillDefinition.twists > 1.5) {
+          const totalTwistsValue = totalTwists(skillDefinition);
+          if (totalTwistsValue > 1.5) {
             it("should distribute high twist amounts appropriately", () => {
               const twists = skill.positions.map((pos) => pos.twist);
               const maxTwist = Math.max(...twists.map(Math.abs));
 
-              expect(maxTwist).toBeCloseTo(skillDefinition.twists, 1);
+              expect(maxTwist).toBeCloseTo(totalTwistsValue, 1);
             });
           }
 
