@@ -13,7 +13,7 @@ import {
   Alert,
   Collapse,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
@@ -43,7 +43,7 @@ interface RoutineBuilderProps {
   skillDefinitionsLength: number;
 }
 
-export default function RoutineBuilder({
+const RoutineBuilder = memo(function RoutineBuilder({
   routine,
   onPlayRoutine,
   onClearRoutine,
@@ -54,12 +54,21 @@ export default function RoutineBuilder({
 }: RoutineBuilderProps) {
   const [useWomensScoring, setUseWomensScoring] = useState(false);
 
-  // Check if routine contains any triple flips (3+ flips)
-  const hasTriples = routine.some((skill) => skill.flips >= 3);
+  // Memoize expensive validation calculations
+  const { routineIsValid, validationErrors, hasTriples, totalDifficulty } =
+    useMemo(() => {
+      const hasTriples = routine.some((skill) => skill.flips >= 3);
+      const routineIsValid = isRoutineValid(routine);
+      const validationErrors = getRoutineValidationErrors(routine);
+      const totalDifficulty = routineDifficultyScore(routine, useWomensScoring);
 
-  // Validate routine
-  const routineIsValid = isRoutineValid(routine);
-  const validationErrors = getRoutineValidationErrors(routine);
+      return {
+        hasTriples,
+        routineIsValid,
+        validationErrors,
+        totalDifficulty,
+      };
+    }, [routine, useWomensScoring]);
 
   return (
     <Card
@@ -137,7 +146,7 @@ export default function RoutineBuilder({
                   Routine Difficulty
                 </Typography>
                 <Typography variant="h5" fontWeight={700}>
-                  {routineDifficultyScore(routine, useWomensScoring)} DD
+                  {totalDifficulty} DD
                 </Typography>
               </Stack>
               <Stack
@@ -281,4 +290,6 @@ export default function RoutineBuilder({
       </CardContent>
     </Card>
   );
-}
+});
+
+export default RoutineBuilder;

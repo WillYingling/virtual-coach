@@ -1,5 +1,6 @@
 import { Stack, AppBar, Toolbar, Typography, Box } from "@mui/material";
 import SportsGymnasticsIcon from "@mui/icons-material/SportsGymnastics";
+import { useCallback } from "react";
 import RoutineBuilder from "./components/RoutineBuilder";
 import SkillLibrary from "./components/SkillLibrary";
 import SimulatorModal from "./components/SimulatorModal";
@@ -27,19 +28,26 @@ function App() {
     closeSimulator,
   } = useSimulator();
 
-  const handlePlaySkill = (definition: SkillDefinition) => {
-    const selectedPos = selectedPositions[definition.name];
-    playSkill(definition, selectedPos);
-  };
+  // Memoize callbacks to prevent unnecessary re-renders
+  const handlePlaySkill = useCallback(
+    (definition: SkillDefinition) => {
+      const selectedPos = selectedPositions[definition.name];
+      playSkill(definition, selectedPos);
+    },
+    [selectedPositions, playSkill],
+  );
 
-  const handleAddToRoutine = (definition: SkillDefinition) => {
-    const selectedPos = selectedPositions[definition.name];
-    addToRoutine(definition, selectedPos);
-  };
+  const handleAddToRoutine = useCallback(
+    (definition: SkillDefinition) => {
+      const selectedPos = selectedPositions[definition.name];
+      addToRoutine(definition, selectedPos);
+    },
+    [selectedPositions, addToRoutine],
+  );
 
-  const handlePlayRoutine = () => {
+  const handlePlayRoutine = useCallback(() => {
     playRoutine(routine);
-  };
+  }, [routine, playRoutine]);
 
   return (
     <Box
@@ -49,7 +57,6 @@ function App() {
         height: { xs: "100dvh", sm: "100vh" }, // Use dynamic viewport height on mobile
         minHeight: "100vh", // Fallback for older browsers
         bgcolor: "grey.50",
-        width: "100vw", // Use viewport width explicitly
         maxWidth: "none",
       }}
     >
@@ -94,13 +101,11 @@ function App() {
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
-          width: "100vw", // Ensure full viewport width
           maxWidth: "none",
         }}
       >
         <Box
           sx={{
-            width: "100vw",
             maxWidth: "none",
             flex: 1,
             display: "flex",
@@ -112,7 +117,6 @@ function App() {
             direction={{ xs: "column", md: "row" }}
             spacing={{ xs: 0.5, sm: 1, md: 2 }} // Reduce spacing for more usable space
             sx={{
-              width: "100vw",
               maxWidth: "none",
               flex: 1,
               overflow: "hidden",

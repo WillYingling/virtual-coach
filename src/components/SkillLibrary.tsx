@@ -17,7 +17,7 @@ import {
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import { Position } from "../models/SkillDefinition";
 import {
@@ -37,7 +37,7 @@ interface SkillLibraryProps {
   onSelectPosition: (skillName: string, position: Position) => void;
 }
 
-export default function SkillLibrary({
+const SkillLibrary = memo(function SkillLibrary({
   skillDefinitions,
   selectedPositions,
   onPlaySkill,
@@ -49,6 +49,15 @@ export default function SkillLibrary({
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
   >({});
+
+  // Memoize grouped and sorted skills to prevent recalculation on every render
+  const categorizedSkills = useMemo(
+    () =>
+      sortFlipCategories(
+        Object.entries(groupSkillsByFlips(skillDefinitions)),
+      ),
+    [skillDefinitions],
+  );
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => ({
@@ -80,9 +89,7 @@ export default function SkillLibrary({
           <Typography color="text.secondary">Loading skills...</Typography>
         ) : (
           <Stack spacing={2}>
-            {sortFlipCategories(
-              Object.entries(groupSkillsByFlips(skillDefinitions)),
-            ).map(([category, skills]) => {
+            {categorizedSkills.map(([category, skills]) => {
               const isExpanded = expandedCategories[category] ?? true;
 
               return (
@@ -283,4 +290,6 @@ export default function SkillLibrary({
       </CardContent>
     </Card>
   );
-}
+});
+
+export default SkillLibrary;

@@ -148,8 +148,17 @@ function positionScore(skill: SkillDefinition): number {
   return flips * 0.1;
 }
 
+// Cache for difficulty scores to avoid recalculation
+const difficultyCache = new Map<string, number>();
+
+// Generate a cache key from skill properties
+function getSkillCacheKey(skill: SkillDefinition): string {
+  return `${skill.name}-${skill.position}-${skill.flips}-${skill.twists}-${skill.isBackSkill}`;
+}
+
 /**
  * Calculate difficulty score based on USAG Trampoline scoring principles
+ * Uses memoization to cache results for better performance
  */
 export function calculateDifficultyScore(skill: SkillDefinition): number {
   if (
@@ -160,10 +169,22 @@ export function calculateDifficultyScore(skill: SkillDefinition): number {
     return 0; // No difficulty for straight jumps
   }
 
-  return Math.max(
+  // Check cache first
+  const cacheKey = getSkillCacheKey(skill);
+  const cached = difficultyCache.get(cacheKey);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  // Calculate if not in cache
+  const score = Math.max(
     roundToTwo(rotationScore(skill) + twistScore(skill) + positionScore(skill)),
     CONSTANTS.SCORING.MIN_DIFFICULTY,
   );
+
+  // Store in cache
+  difficultyCache.set(cacheKey, score);
+  return score;
 }
 
 export function routineDifficultyScore(
