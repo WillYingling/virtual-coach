@@ -24,7 +24,7 @@ export interface SkillDefinition {
   startingPosition: BedPosition;
   endingPosition: BedPosition;
   flips: number; // Number of somersaults
-  twists: number; // Number of twists
+  twists: number[]; // Number of twists
   position: Position;
   possiblePositions?: Position[]; // Alternative positions for the skill
   isBackSkill?: boolean; // If true, rotation is inverted for backward skills

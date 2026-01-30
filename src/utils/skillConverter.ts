@@ -36,6 +36,10 @@ const startingPositionRotations = {
   [BedPosition.Seated]: 0, // Quarter flip (90°) from standing
 };
 
+export function totalTwists(definition: SkillDefinition): number {
+  return definition.twists.reduce((sum, twist) => sum + twist, 0);
+}
+
 export function getRenderPropertiesForSkill(
   definition: SkillDefinition,
 ): RenderProperties {
@@ -47,8 +51,10 @@ export function getRenderPropertiesForSkill(
     kickoutRotation = 0.05;
   }
 
+  let twists = totalTwists(definition);
+
   // Adjust based on skill characteristics
-  if (definition.flips > 1 && definition.twists > 0.5) {
+  if (definition.flips > 1 && twists > 0.5) {
     kickoutRotation += 0.25;
   }
 
@@ -86,9 +92,10 @@ function getTwistPhases(
   }
   let twistDuration = 1 - twistStartTimestamp;
   let twistPhases = new Array(timePhases.length).fill(0);
+  let twists = totalTwists(definition);
   for (let i = 0; i < timePhases.length; i++) {
     let twistPortion = (timePhases[i] - twistStartTimestamp) / twistDuration;
-    twistPhases[i] = twistPortion * definition.twists * twistMultiplier[i];
+    twistPhases[i] = twistPortion * twists * twistMultiplier[i];
   }
 
   return twistPhases;
