@@ -6,6 +6,7 @@ import {
 } from "../models/SkillDefinition";
 import { positions } from "../components/Simulator";
 import type { AthletePosition } from "../components/Athlete";
+import { add } from "three/tsl";
 
 export interface RenderProperties {
   stallRotation: number; // rotation during stall
@@ -22,10 +23,10 @@ const relativePositionSpeeds = {
 
 // Map starting positions to joint configurations
 const bedPositionToJoints = {
-  [BedPosition.Standing]: positions.StraightArmsUp,
-  [BedPosition.Back]: positions.StraightArmsDown, // Lying on back
-  [BedPosition.Stomach]: positions.StraightArmsUp, // Lying on stomach
-  [BedPosition.Seated]: positions.Pike, // Seated position similar to pike
+  [BedPosition.Standing]: "StraightArmsUp", // Standing position
+  [BedPosition.Back]: "StraightArmsDown", // Lying on back
+  [BedPosition.Stomach]: "StraightArmsUp", // Lying on stomach
+  [BedPosition.Seated]: "Pike", // Seated position similar to pike
 };
 
 // Map starting positions to initial rotation values
@@ -58,11 +59,6 @@ export function getRenderPropertiesForSkill(
     kickoutRotation += 0.25;
   }
 
-  if (definition.isBackSkill) {
-    stallRotation /= 4;
-    kickoutRotation += 0.15;
-  }
-
   if (definition.startingPosition === BedPosition.Back) {
     stallRotation = 0.25;
   }
@@ -92,7 +88,7 @@ function getTwistPhases(
   }
   let twistDuration = 1 - twistStartTimestamp;
   let twistPhases = new Array(timePhases.length).fill(0);
-  let twists = totalTwists(definition);
+  let twists = totalTwists(definition) - definition.twists[0]; // Subtract any twist at takeoff
   for (let i = 0; i < timePhases.length; i++) {
     let twistPortion = (timePhases[i] - twistStartTimestamp) / twistDuration;
     twistPhases[i] = twistPortion * twists * twistMultiplier[i];
@@ -195,59 +191,176 @@ function getPhases(
   };
 }
 
+function normalizeTimestamps(timestamps: number[]): number[] {
+  const start = timestamps[0];
+  const end = timestamps[timestamps.length - 1];
+  const duration = end - start;
+  return timestamps.map((t) => (t - start) / duration);
+}
+
 /**
  * Convert a SkillDefinition to a timed Skill for animation
  */
-export function skillDefinitionToSkill(
+// export function skillDefinitionToSkill(
+//   definition: SkillDefinition,
+//   cumulativeTwist: number = 0,
+//   renderProps?: RenderProperties,
+// ): Skill {
+//   const keyframes: AthletePosition[] = [];
+//   const timestamps: number[] = [];
+
+//   if (!renderProps) {
+//     renderProps = getRenderPropertiesForSkill(definition);
+//   }
+
+//   // Determine rotation direction based on skill type
+//   let rotationMultiplier = definition.isBackSkill ? -1 : 1;
+
+//   // If cumulative twist results in athlete facing backward (odd multiples of 0.5), invert rotation
+//   const halfTwists = Math.floor(cumulativeTwist * 2);
+//   if (halfTwists % 2 !== 0) {
+//     rotationMultiplier *= -1;
+//   }
+
+//   // Get starting position offset
+//   const startingRotationOffset =
+//     startingPositionRotations[definition.startingPosition];
+//   const startingJoints = bedPositionToJoints[definition.startingPosition];
+
+//   const { rotationPhases, timePhases } = getPhases(definition, renderProps);
+//   const twistPhases = getTwistPhases(definition, timePhases);
+
+//   // Athlete positions during the skill, starting with the appropriate starting position
+//   const atheletePositions = [
+//     startingJoints, // Use starting position instead of always StraightArmsUp
+//     positions.StraightArmsUp,
+//     positions[definition.position],
+//     positions[definition.position],
+//     positions.StraightArmsDown,
+//     bedPositionToJoints[definition.endingPosition],
+//   ];
+
+//   for (let i = 0; i < rotationPhases.length; i++) {
+//     keyframes.push({
+//       rotation: rotationPhases[i] * rotationMultiplier + startingRotationOffset,
+//       twist: twistPhases[i],
+//       joints: atheletePositions[i],
+//     });
+//     timestamps.push(timePhases[i]);
+//   }
+//   console.log("Skill conversion:", { definition, keyframes, timestamps });
+//   return {
+//     positions: keyframes,
+//     timestamps: timestamps,
+//   };
+// }
+
+function getRotationMultiplier(
   definition: SkillDefinition,
-  cumulativeTwist: number = 0,
+  cumulativeTwist: number,
+): number {
+  let rotationMultiplier = 1;
+
+  // If back skill, invert rotation direction
+  if (definition.isBackSkill) {
+    rotationMultiplier *= -1;
+  }
+
+  // If cumulative twist results in athlete facing backward (odd multiples of 0.5), invert rotation
+  if (Math.floor(cumulativeTwist * 2) % 2 !== 0) {
+    rotationMultiplier *= -1;
+  }
+
+  return rotationMultiplier;
+}
+
+export function makeSkillFrames(
+  definition: SkillDefinition,
+  incomingTwist: number = 0,
   renderProps?: RenderProperties,
 ): Skill {
-  const keyframes: AthletePosition[] = [];
-  const timestamps: number[] = [];
+  let rotationMultiplier = getRotationMultiplier(definition, incomingTwist);
+
+  let frames: AthletePosition[] = [];
+  let timestamps: number[] = [];
+
+  let initialRotation = startingPositionRotations[definition.startingPosition];
+
+  let cumulativeRotation = initialRotation;
+  let cumulativeTwist = 0;
+  let elapsedTime = 0;
+  let addPhase = (
+    rotation: number,
+    twist: number,
+    position: string,
+    duration: number,
+  ) => {
+    cumulativeRotation += rotation;
+    cumulativeTwist += twist;
+    elapsedTime += duration;
+
+    frames.push({
+      rotation: cumulativeRotation * rotationMultiplier,
+      twist: cumulativeTwist,
+      joints: positions[position],
+    });
+    timestamps.push(elapsedTime);
+  };
+
+  // Initial Position
+  let startingJoints = bedPositionToJoints[definition.startingPosition];
+  addPhase(0, 0, startingJoints, 0);
 
   if (!renderProps) {
     renderProps = getRenderPropertiesForSkill(definition);
   }
+  let stallTwist = definition.twists[0];
+  // Initial position to Stall Phase
+  addPhase(
+    renderProps.stallRotation,
+    stallTwist,
+    "StraightArmsUp",
+    renderProps.stallRotation,
+  );
 
-  // Determine rotation direction based on skill type
-  let rotationMultiplier = definition.isBackSkill ? -1 : 1;
+  for (let flipNumber = 1; flipNumber <= definition.flips; flipNumber++) {
+    let rotationThisFlip = flipNumber - cumulativeRotation;
+    let flipSpeed = relativePositionSpeeds[definition.position];
+    let isLastFlip = rotationThisFlip + cumulativeRotation >= definition.flips;
 
-  // If cumulative twist results in athlete facing backward (odd multiples of 0.5), invert rotation
-  const halfTwists = Math.floor(cumulativeTwist * 2);
-  if (halfTwists % 2 !== 0) {
-    rotationMultiplier *= -1;
-  }
-
-  // Get starting position offset
-  const startingRotationOffset =
-    startingPositionRotations[definition.startingPosition];
-  const startingJoints = bedPositionToJoints[definition.startingPosition];
-
-  const { rotationPhases, timePhases } = getPhases(definition, renderProps);
-  const twistPhases = getTwistPhases(definition, timePhases);
-
-  // Athlete positions during the skill, starting with the appropriate starting position
-  const atheletePositions = [
-    startingJoints, // Use starting position instead of always StraightArmsUp
-    positions.StraightArmsUp,
-    positions[definition.position],
-    positions[definition.position],
-    positions.StraightArmsDown,
-    bedPositionToJoints[definition.endingPosition],
-  ];
-
-  for (let i = 0; i < rotationPhases.length; i++) {
-    keyframes.push({
-      rotation: rotationPhases[i] * rotationMultiplier + startingRotationOffset,
-      twist: twistPhases[i],
-      joints: atheletePositions[i],
+    console.log("Adding flip phase:", {
+      flipNumber,
+      rotationThisFlip,
+      cumulativeRotation,
+      isLastFlip,
     });
-    timestamps.push(timePhases[i]);
+    if (isLastFlip) {
+      addPhase(
+        rotationThisFlip - renderProps.kickoutRotation,
+        0,
+        definition.position,
+        rotationThisFlip / flipSpeed,
+      );
+      addPhase(
+        renderProps.kickoutRotation,
+        definition.twists[flipNumber] || 0,
+        "StraightArmsUp",
+        renderProps.kickoutRotation,
+      );
+    } else {
+      addPhase(
+        rotationThisFlip,
+        definition.twists[flipNumber] || 0,
+        definition.position,
+        rotationThisFlip / flipSpeed,
+      );
+    }
   }
-  console.log("Skill conversion:", { definition, keyframes, timestamps });
-  return {
-    positions: keyframes,
-    timestamps: timestamps,
+
+  let skill: Skill = {
+    positions: frames,
+    timestamps: normalizeTimestamps(timestamps),
   };
+  console.log("Generated skill frames:", skill);
+  return skill;
 }

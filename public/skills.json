@@ -4,18 +4,32 @@
     "startingPosition": "Standing",
     "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 0],
+    "twists": [
+      0,
+      0
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Back Flip",
     "startingPosition": "Standing",
     "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 0],
+    "twists": [
+      0,
+      0
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
     "isBackSkill": true
   },
   {
@@ -23,9 +37,16 @@
     "startingPosition": "Standing",
     "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 0.5],
+    "twists": [
+      0,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
     "isBackSkill": true
   },
   {
@@ -33,9 +54,14 @@
     "startingPosition": "Standing",
     "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 1],
+    "twists": [
+      0,
+      1
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"],
+    "possiblePositions": [
+      "StraightArmsDown"
+    ],
     "isBackSkill": true
   },
   {
@@ -43,9 +69,14 @@
     "startingPosition": "Standing",
     "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 2],
+    "twists": [
+      0,
+      2
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"],
+    "possiblePositions": [
+      "StraightArmsDown"
+    ],
     "isBackSkill": true
   },
   {
@@ -53,528 +84,956 @@
     "startingPosition": "Standing",
     "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 3],
+    "twists": [
+      0,
+      3
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"],
+    "possiblePositions": [
+      "StraightArmsDown"
+    ],
     "isBackSkill": true
   },
   {
     "name": "Double Back",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 0, 0],
+    "twists": [
+      0,
+      0,
+      0
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Half in, half out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0.5, 0, 0.5],
+    "twists": [
+      0.5,
+      0,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Half in, rudy out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0.5, 0, 1.5],
+    "twists": [
+      0.5,
+      0,
+      1.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Half in, Randy out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0.5, 0, 2.5],
+    "twists": [
+      0.5,
+      0,
+      2.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Full In",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 1, 0],
+    "twists": [
+      0,
+      1,
+      0
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Full Out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 0, 1],
+    "twists": [
+      0,
+      0,
+      1
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Full in, full out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 1, 1],
+    "twists": [
+      0,
+      1,
+      1
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "1 1/2 in, half out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 1.5, 0.5],
+    "twists": [
+      0,
+      1.5,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Full, Double Full",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 1, 2],
+    "twists": [
+      0,
+      1,
+      2
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Double Full, Double Full",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 2, 2],
+    "twists": [
+      0,
+      2,
+      2
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Triple Back",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 3,
-    "twists": [0, 0, 0, 0],
+    "twists": [
+      0,
+      0,
+      0,
+      0
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Triffis half in, half out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 3,
-    "twists": [0.5, 0, 0, 0.5],
+    "twists": [
+      0.5,
+      0,
+      0,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Triffis half in, rudy out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 3,
-    "twists": [0.5, 0, 0, 1.5],
+    "twists": [
+      0.5,
+      0,
+      0,
+      1.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Triffis full, full, full",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 3,
-    "twists": [0, 1, 1, 1],
+    "twists": [
+      0,
+      1,
+      1,
+      1
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Quad Back",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 4,
-    "twists": [0, 0, 0, 0],
+    "twists": [
+      0,
+      0,
+      0,
+      0
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "isBackSkill": true,
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Barani",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 0.5],
+    "twists": [
+      0,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Barani Out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 0, 0.5],
+    "twists": [
+      0,
+      0,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Half-in",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 0.5, 0],
+    "twists": [
+      0,
+      0.5,
+      0
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Half-in, full-out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 0.5, 1],
+    "twists": [
+      0,
+      0.5,
+      1
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Full-in, barani-out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 1, 0.5],
+    "twists": [
+      0,
+      1,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Full-in, Rudy-out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 1, 1.5],
+    "twists": [
+      0,
+      1,
+      1.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Full-in, Randy-out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 1, 2.5],
+    "twists": [
+      0,
+      1,
+      2.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Rudy Out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 0, 1.5],
+    "twists": [
+      0,
+      0,
+      1.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Rudy",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 1.5],
+    "twists": [
+      0,
+      1.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown", "Tuck"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "StraightArmsDown",
+      "Tuck"
+    ]
   },
   {
     "name": "Randy",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 2.5],
+    "twists": [
+      0,
+      2.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Randy Out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 0, 2.5],
+    "twists": [
+      0,
+      0,
+      2.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Adolf",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 3.5],
+    "twists": [
+      0,
+      3.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Position Jump",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 0,
-    "twists": [0, 0],
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown", "Tuck", "Pike"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "StraightArmsDown",
+      "Tuck",
+      "Pike"
+    ]
   },
   {
     "name": "Triffis half-out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 3,
-    "twists": [0, 0, 0, 0.5],
+    "twists": [
+      0,
+      0,
+      0,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Triffis rudy-out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 3,
-    "twists": [0, 0, 0, 1.5],
+    "twists": [
+      0,
+      0,
+      0,
+      1.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Triffis full-in, half-out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 3,
-    "twists": [0, 1, 0, 0.5],
+    "twists": [
+      0,
+      1,
+      0,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Triffis full-in, rudy-out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 3,
-    "twists": [0, 1, 0, 1.5],
+    "twists": [
+      0,
+      1,
+      0,
+      1.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Quad half out",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 4,
-    "twists": [0, 0, 0, 0, 0.5],
+    "twists": [
+      0,
+      0,
+      0,
+      0,
+      0.5
+    ],
     "position": "Tuck",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Stomach Drop",
     "startingPosition": "Standing",
     "endingPosition": "Stomach",
     "flips": 0.25,
-    "twists": [0, 0],
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"]
+    "possiblePositions": [
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Back Drop",
     "startingPosition": "Standing",
     "endingPosition": "Back",
     "flips": 0.25,
-    "twists": [0, 0],
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"],
+    "possiblePositions": [
+      "StraightArmsDown"
+    ],
     "isBackSkill": true
   },
   {
     "name": "3/4 Back Flip",
     "startingPosition": "Standing",
+    "endingPosition": "Stomach",
     "flips": 0.75,
-    "twists": [0, 0],
-    "isBackSkill": true,
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Stomach"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "1 3/4 Back with 1/2 Twist",
     "startingPosition": "Standing",
+    "endingPosition": "Back",
     "flips": 1.75,
-    "twists": [0, 0, 0.5],
-    "isBackSkill": true,
+    "twists": [
+      0,
+      0,
+      0.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Back"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "2 3/4 Back with 1/2 Twist",
     "startingPosition": "Standing",
+    "endingPosition": "Back",
     "flips": 2.75,
-    "twists": [0, 0, 0, 0.5],
-    "isBackSkill": true,
+    "twists": [
+      0,
+      0,
+      0,
+      0.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Back"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Pullover",
     "startingPosition": "Back",
+    "endingPosition": "Standing",
     "flips": 0.75,
-    "twists": [0, 0],
-    "isBackSkill": true,
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Stomach"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Double Pullover",
     "startingPosition": "Back",
+    "endingPosition": "Stomach",
     "flips": 1.75,
-    "twists": [0, 0, 0],
-    "isBackSkill": true,
+    "twists": [
+      0,
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Stomach"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Cody",
     "startingPosition": "Stomach",
+    "endingPosition": "Standing",
     "flips": 1.25,
-    "twists": [0, 0],
-    "isBackSkill": true,
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Cody Full",
     "startingPosition": "Stomach",
+    "endingPosition": "Standing",
     "flips": 1.25,
-    "twists": [0, 1],
-    "isBackSkill": true,
+    "twists": [
+      0,
+      1
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "Double Cody",
     "startingPosition": "Stomach",
+    "endingPosition": "Standing",
     "flips": 2.25,
-    "twists": [0, 0, 0],
-    "isBackSkill": true,
+    "twists": [
+      0,
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ],
+    "isBackSkill": true
   },
   {
     "name": "3/4 Front Flip",
     "startingPosition": "Standing",
+    "endingPosition": "Back",
     "flips": 0.75,
-    "twists": [0, 0],
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Back"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Front 1 and 3",
     "startingPosition": "Standing",
+    "endingPosition": "Back",
     "flips": 1.75,
-    "twists": [0, 0, 0],
+    "twists": [
+      0,
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Back"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Front 2 and 3",
     "startingPosition": "Standing",
+    "endingPosition": "Back",
     "flips": 2.75,
-    "twists": [0, 0, 0, 0],
+    "twists": [
+      0,
+      0,
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Back"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Double Front",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 2,
-    "twists": [0, 0, 0],
+    "twists": [
+      0,
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Porpoise",
     "startingPosition": "Back",
+    "endingPosition": "Back",
     "flips": 1,
-    "twists": [0, 0],
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Back"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Double Porpoise",
     "startingPosition": "Back",
+    "endingPosition": "Back",
     "flips": 2,
-    "twists": [0, 0, 0],
+    "twists": [
+      0,
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Back"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Ball out",
     "startingPosition": "Back",
+    "endingPosition": "Standing",
     "flips": 1.25,
-    "twists": [0, 0],
+    "twists": [
+      0,
+      0
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Barani Ball out",
     "startingPosition": "Back",
+    "endingPosition": "Standing",
     "flips": 1.25,
-    "twists": [0, 0.5],
+    "twists": [
+      0,
+      0.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Fliffis Ball out",
     "startingPosition": "Back",
+    "endingPosition": "Standing",
     "flips": 2.25,
-    "twists": [0, 0, 0.5],
+    "twists": [
+      0,
+      0,
+      0.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Fliffis Rudy Ball out",
     "startingPosition": "Back",
+    "endingPosition": "Standing",
     "flips": 2.25,
-    "twists": [0, 0, 1.5],
+    "twists": [
+      0,
+      0,
+      1.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Rudy Ball out",
     "startingPosition": "Back",
+    "endingPosition": "Standing",
     "flips": 1.25,
-    "twists": [0, 1.5],
+    "twists": [
+      0,
+      1.5
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "Tuck",
+      "Pike",
+      "StraightArmsDown"
+    ]
   },
   {
     "name": "Front Full",
     "startingPosition": "Standing",
+    "endingPosition": "Standing",
     "flips": 1,
-    "twists": [0, 1],
+    "twists": [
+      0,
+      1
+    ],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown"],
-    "endingPosition": "Standing"
+    "possiblePositions": [
+      "StraightArmsDown"
+    ]
   }
 ]

@@ -3,6 +3,8 @@ FROM node:25
 # Set the working directory in the container
 WORKDIR /app
 
+RUN apt update && apt install -y jq
+
 # Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install
