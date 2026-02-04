@@ -6,7 +6,6 @@ import {
 } from "../models/SkillDefinition";
 import { positions } from "../components/Simulator";
 import type { AthletePosition } from "../components/Athlete";
-import { add } from "three/tsl";
 
 export interface RenderProperties {
   stallRotation: number; // rotation during stall
@@ -279,88 +278,145 @@ export function makeSkillFrames(
   incomingTwist: number = 0,
   renderProps?: RenderProperties,
 ): Skill {
+  console.log("Making skill frames for:", definition);
   let rotationMultiplier = getRotationMultiplier(definition, incomingTwist);
 
   let frames: AthletePosition[] = [];
   let timestamps: number[] = [];
 
-  let initialRotation = startingPositionRotations[definition.startingPosition];
-
-  let cumulativeRotation = initialRotation;
-  let cumulativeTwist = 0;
-  let elapsedTime = 0;
-  let addPhase = (
+  let addFrame = (
     rotation: number,
     twist: number,
     position: string,
-    duration: number,
+    timestamp: number,
   ) => {
-    cumulativeRotation += rotation;
-    cumulativeTwist += twist;
-    elapsedTime += duration;
+    console.log("Adding frame:", {
+      rotation,
+      twist,
+      position,
+      timestamp,
+    });
 
     frames.push({
-      rotation: cumulativeRotation * rotationMultiplier,
-      twist: cumulativeTwist,
+      rotation: rotation * rotationMultiplier,
+      twist: twist,
       joints: positions[position],
     });
-    timestamps.push(elapsedTime);
+    timestamps.push(timestamp);
   };
 
   // Initial Position
+  let initialRotation = startingPositionRotations[definition.startingPosition];
   let startingJoints = bedPositionToJoints[definition.startingPosition];
-  addPhase(0, 0, startingJoints, 0);
+  console.log("Initial frame");
+  addFrame(initialRotation, 0, startingJoints, 0);
 
   if (!renderProps) {
     renderProps = getRenderPropertiesForSkill(definition);
   }
   let stallTwist = definition.twists[0];
   // Initial position to Stall Phase
-  addPhase(
+  console.log("Stall frame");
+  addFrame(
     renderProps.stallRotation,
     stallTwist,
     "StraightArmsUp",
     renderProps.stallRotation,
   );
 
-  for (let flipNumber = 1; flipNumber <= definition.flips; flipNumber++) {
-    let rotationThisFlip = flipNumber - cumulativeRotation;
-    let flipSpeed = relativePositionSpeeds[definition.position];
-    let isLastFlip = rotationThisFlip + cumulativeRotation >= definition.flips;
+  const transitionRotation = 1 / 8.0;
 
-    console.log("Adding flip phase:", {
+  let finalRotation = definition.flips + initialRotation;
+  let cumulativeRotation = renderProps.stallRotation;
+  let cumulativeTwist = stallTwist;
+  let elapsedTime = renderProps.stallRotation;
+  for (let flipNumber = 1; flipNumber <= finalRotation; flipNumber++) {
+    let flipFinalRotation = Math.min(flipNumber, finalRotation);
+
+    let rotationDelta = flipFinalRotation - cumulativeRotation;
+
+    let isLastFlip = rotationDelta + cumulativeRotation >= definition.flips;
+
+    let position = definition.position;
+    if (definition.twists[flipNumber] > 0 && !isLastFlip) {
+      position = "StraightArmsDown";
+    }
+    let flipSpeed = relativePositionSpeeds[position];
+
+    console.log("Processing flip:", {
       flipNumber,
-      rotationThisFlip,
-      cumulativeRotation,
+      rotationDelta,
       isLastFlip,
+      position,
+      elapsedTime,
     });
+
+    let rotationInPosition = rotationDelta;
     if (isLastFlip) {
-      addPhase(
-        rotationThisFlip - renderProps.kickoutRotation,
-        0,
-        definition.position,
-        rotationThisFlip / flipSpeed,
-      );
-      addPhase(
-        renderProps.kickoutRotation,
-        definition.twists[flipNumber] || 0,
-        "StraightArmsUp",
-        renderProps.kickoutRotation,
-      );
-    } else {
-      addPhase(
-        rotationThisFlip,
-        definition.twists[flipNumber] || 0,
-        definition.position,
-        rotationThisFlip / flipSpeed,
+      rotationInPosition -= renderProps.kickoutRotation;
+    }
+
+    if (position !== "StraightArmsDown") {
+      console.log("Adding enter position frame");
+      // Add a frame to enter the position
+
+      addFrame(
+        cumulativeRotation +
+          rotationInPosition * renderProps.positionTransitionDuration,
+        cumulativeTwist,
+        position,
+        elapsedTime +
+          (rotationInPosition * renderProps.positionTransitionDuration) /
+            flipSpeed,
       );
     }
+
+    if (isLastFlip) {
+      console.log("End position frame");
+      addFrame(
+        cumulativeRotation + rotationInPosition,
+        cumulativeTwist,
+        definition.position,
+        elapsedTime + rotationInPosition / flipSpeed,
+      );
+      elapsedTime += rotationInPosition / flipSpeed;
+
+      console.log("Start kickout frame");
+      addFrame(
+        cumulativeRotation +
+          rotationInPosition +
+          renderProps.kickoutRotation * renderProps.positionTransitionDuration,
+        cumulativeTwist + definition.twists[flipNumber],
+        "StraightArmsUp",
+        elapsedTime +
+          renderProps.kickoutRotation * renderProps.positionTransitionDuration,
+      );
+
+      console.log("End kickout frame");
+      addFrame(
+        cumulativeRotation + rotationInPosition + renderProps.kickoutRotation,
+        cumulativeTwist + definition.twists[flipNumber],
+        "StraightArmsUp",
+        elapsedTime + renderProps.kickoutRotation,
+      );
+      elapsedTime += renderProps.kickoutRotation;
+    } else {
+      addFrame(
+        rotationDelta + cumulativeRotation,
+        cumulativeTwist + definition.twists[flipNumber],
+        position,
+        elapsedTime + rotationDelta / flipSpeed,
+      );
+      elapsedTime += rotationDelta / flipSpeed;
+    }
+
+    cumulativeRotation += rotationDelta;
+    cumulativeTwist += definition.twists[flipNumber];
   }
 
   let skill: Skill = {
     positions: frames,
     timestamps: normalizeTimestamps(timestamps),
   };
-  console.log("Generated skill frames:", skill);
   return skill;
 }
