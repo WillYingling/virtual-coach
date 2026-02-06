@@ -22,7 +22,7 @@ import Simulator from "./Simulator";
 import type { Skill } from "./AthleteController";
 import type { RenderProperties } from "../utils/skillConverter";
 import {
-  skillDefinitionToSkill,
+  makeSkillFrames,
   getRenderPropertiesForSkill,
 } from "../utils/skillConverter";
 import type { SkillDefinition } from "../models/SkillDefinition";
@@ -73,7 +73,7 @@ export default function SimulatorModal({
         const newSkills: Skill[] = [];
 
         for (const definition of skillDefinitions) {
-          const skill = skillDefinitionToSkill(
+          const skill = makeSkillFrames(
             definition,
             cumulativeTwist,
             renderProperties,
