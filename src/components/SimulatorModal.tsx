@@ -89,9 +89,9 @@ export default function SimulatorModal({
 
         return newSkills;
       }
-      return initialSkills;
+      return [];
     },
-    [skillDefinitions, initialSkills],
+    [skillDefinitions],
   );
 
   // Regenerated skills based on render properties
@@ -162,14 +162,23 @@ export default function SimulatorModal({
     setJumpPhaseLength(newValue as number);
   };
 
-  const handleRenderPropChange = (
-    property: keyof RenderProperties,
-    value: number,
-  ) => {
-    const newRenderProps = { ...renderProps, [property]: value };
-    setRenderProps(newRenderProps);
-    regenerateSkills(newRenderProps);
-  };
+  const handleRenderPropChange = useCallback(
+    (property: keyof RenderProperties, value: number) => {
+      setRenderProps((prevProps) => {
+        const newRenderProps = { ...prevProps, [property]: value };
+        return newRenderProps;
+      });
+    },
+    [],
+  );
+
+  const handleRenderPropChangeCommitted = useCallback(
+    (property: keyof RenderProperties, value: number) => {
+      const newRenderProps = { ...renderProps, [property]: value };
+      regenerateSkills(newRenderProps);
+    },
+    [renderProps, regenerateSkills],
+  );
   return (
     <Dialog
       open={open}
@@ -302,6 +311,12 @@ export default function SimulatorModal({
                       onChange={(_, value) =>
                         handleRenderPropChange("stallRotation", value as number)
                       }
+                      onChangeCommitted={(_, value) =>
+                        handleRenderPropChangeCommitted(
+                          "stallRotation",
+                          value as number,
+                        )
+                      }
                       min={0}
                       max={0.5}
                       step={0.01}
@@ -331,6 +346,12 @@ export default function SimulatorModal({
                           value as number,
                         )
                       }
+                      onChangeCommitted={(_, value) =>
+                        handleRenderPropChangeCommitted(
+                          "kickoutRotation",
+                          value as number,
+                        )
+                      }
                       min={0.1}
                       max={0.75}
                       step={0.01}
@@ -356,6 +377,12 @@ export default function SimulatorModal({
                       value={renderProps.positionTransitionDuration}
                       onChange={(_, value) =>
                         handleRenderPropChange(
+                          "positionTransitionDuration",
+                          value as number,
+                        )
+                      }
+                      onChangeCommitted={(_, value) =>
+                        handleRenderPropChangeCommitted(
                           "positionTransitionDuration",
                           value as number,
                         )
