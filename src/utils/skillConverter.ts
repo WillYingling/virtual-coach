@@ -175,11 +175,14 @@ export function makeSkillFrames(
   definition: SkillDefinition,
   incomingTwist: number = 0,
   renderProps?: RenderProperties,
+  debug: boolean = false,
 ): Skill {
+  const debugLog = debug ? console.log : () => {};
   if (definition.flips === 0) {
     return makePositionJumpFrames(definition);
   }
-  console.log("Making skill frames for:", definition);
+
+  debugLog("Making skill frames for:", definition);
   let rotationMultiplier = getRotationMultiplier(definition, incomingTwist);
 
   let frames: AthletePosition[] = [];
@@ -196,7 +199,7 @@ export function makeSkillFrames(
     position: string,
     rotationSpeed: number,
   ) => {
-    console.log("Adding frame", {
+    debugLog("Adding frame", {
       name,
       rotationDelta,
       twistDelta,
@@ -239,7 +242,7 @@ export function makeSkillFrames(
   );
   let previousPosition = "StraightArmsDown";
 
-  const transitionRotation = 1 / 8.0;
+  const transitionRotation = 1 / 6.0;
 
   let finalRotation = definition.flips + initialRotation * rotationMultiplier;
   for (
@@ -260,7 +263,7 @@ export function makeSkillFrames(
     let flipSpeed = relativePositionSpeeds[position];
 
     let needsKickout = isLastFlip && position !== "StraightArmsDown";
-    console.log("Processing flip:", {
+    debugLog("Processing flip:", {
       flipNumber,
       rotationDelta,
       isLastFlip,
@@ -281,23 +284,25 @@ export function makeSkillFrames(
       transitionRotation,
       rotationInPosition / 2,
     );
-    console.log("thisTransitionRotation:", thisTransitionRotation);
 
     if (position !== previousPosition) {
       previousPosition = position;
+      let previousSpeed =
+        relativePositionSpeeds[
+          previousPosition as keyof typeof relativePositionSpeeds
+        ];
       rotationInPosition -= thisTransitionRotation;
       addFrameDelta(
         "Enter Position",
         thisTransitionRotation,
         0,
         position,
-        flipSpeed,
+        (flipSpeed + previousSpeed) / 2,
       );
     }
 
     if (needsKickout) {
       rotationInPosition -= thisTransitionRotation;
-      console.log("rotationInPosition:", rotationInPosition);
 
       addFrameDelta(
         "Final Position",
@@ -344,10 +349,10 @@ export function makeSkillFrames(
     }
   }
 
-  console.log("Final skill frames:", frames);
   let skill: Skill = {
     positions: frames,
     timestamps: normalizeTimestamps(timestamps),
   };
+  debugLog("Final skill frames:", frames);
   return skill;
 }

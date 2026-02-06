@@ -203,7 +203,7 @@
     "startingPosition": "Standing",
     "endingPosition": "Standing",
     "flips": 4,
-    "twists": [0, 0, 0, 0],
+    "twists": [0, 0, 0, 0, 0],
     "position": "Tuck",
     "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"],
     "isBackSkill": true
