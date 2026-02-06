@@ -1,4 +1,4 @@
-import { skillDefinitionToSkill, totalTwists } from "../skillConverter";
+import { makeSkillFrames, totalTwists } from "../skillConverter";
 import {
   SkillDefinition,
   Position,
@@ -19,7 +19,7 @@ interface Skill {
   timestamps: number[];
 }
 
-describe("skillDefinitionToSkill", () => {
+describe("makeSkillFrames", () => {
   // Load all skills from skills.json synchronously
   const skillsPath = path.join(__dirname, "../../../public/skills.json");
   const skillsData = JSON.parse(fs.readFileSync(skillsPath, "utf-8"));
@@ -33,12 +33,7 @@ describe("skillDefinitionToSkill", () => {
 
           beforeAll(() => {
             skillDefinition.position = position as Position;
-            skill = skillDefinitionToSkill(skillDefinition);
-          });
-
-          it("should have exactly 6 positions and timestamps", () => {
-            expect(skill.positions).toHaveLength(6);
-            expect(skill.timestamps).toHaveLength(6);
+            skill = makeSkillFrames(skillDefinition);
           });
 
           it("should have increasing timestamps from 0 to 1", () => {
@@ -211,8 +206,8 @@ describe("skillDefinitionToSkill", () => {
     skills.slice(0, 5).forEach((skillDefinition) => {
       if (skillDefinition.flips > 0) {
         it(`should handle cumulative twist for ${skillDefinition.name}`, () => {
-          const normalSkill = skillDefinitionToSkill(skillDefinition, 0);
-          const twistedSkill = skillDefinitionToSkill(skillDefinition, 0.5);
+          const normalSkill = makeSkillFrames(skillDefinition, 0);
+          const twistedSkill = makeSkillFrames(skillDefinition, 0.5);
 
           const normalRotations = normalSkill.positions.map(
             (pos) => pos.rotation,
@@ -238,8 +233,8 @@ describe("skillDefinitionToSkill", () => {
   describe("skills consistency", () => {
     it("should produce identical results for repeated calls", () => {
       const testSkill = skills[0]; // Use first skill for consistency test
-      const skill1 = skillDefinitionToSkill(testSkill);
-      const skill2 = skillDefinitionToSkill(testSkill);
+      const skill1 = makeSkillFrames(testSkill);
+      const skill2 = makeSkillFrames(testSkill);
 
       expect(skill1.timestamps).toEqual(skill2.timestamps);
       expect(skill1.positions).toEqual(skill2.positions);

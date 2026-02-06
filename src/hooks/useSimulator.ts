@@ -37,7 +37,19 @@ export function useSimulator() {
       let cumulativeTwist = 0;
       const animatedSkills = routine.map((def) => {
         const skill = makeSkillFrames(def, cumulativeTwist);
-        cumulativeTwist += totalTwists(def);
+        const twistIncrement = totalTwists(def);
+        // Safety check: if twistIncrement is NaN, log error and use 0
+        if (isNaN(twistIncrement)) {
+          console.error(
+            "totalTwists returned NaN for skill:",
+            def.name,
+            "twists:",
+            def.twists,
+          );
+          cumulativeTwist += 0;
+        } else {
+          cumulativeTwist += twistIncrement;
+        }
         return skill;
       });
       setSkills(animatedSkills);

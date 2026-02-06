@@ -37,7 +37,11 @@ const startingPositionRotations = {
 };
 
 export function totalTwists(definition: SkillDefinition): number {
-  return definition.twists.reduce((sum, twist) => sum + twist, 0);
+  return definition.twists.reduce((sum, twist) => {
+    // Ensure twist is a valid number, default to 0 if not
+    const validTwist = typeof twist === "number" && !isNaN(twist) ? twist : 0;
+    return sum + validTwist;
+  }, 0);
 }
 
 export function getRenderPropertiesForSkill(
@@ -91,6 +95,12 @@ function normalizeTimestamps(timestamps: number[]): number[] {
   const start = timestamps[0];
   const end = timestamps[timestamps.length - 1];
   const duration = end - start;
+
+  // Prevent division by zero - if all timestamps are the same, return array of 0s
+  if (duration === 0) {
+    return timestamps.map(() => 0);
+  }
+
   return timestamps.map((t) => (t - start) / duration);
 }
 
@@ -175,7 +185,7 @@ export function makeSkillFrames(
   definition: SkillDefinition,
   incomingTwist: number = 0,
   renderProps?: RenderProperties,
-  debug: boolean = false,
+  debug: boolean = true,
 ): Skill {
   const debugLog = debug ? console.log : () => {};
   if (definition.flips === 0) {
@@ -245,19 +255,17 @@ export function makeSkillFrames(
   const transitionRotation = 1 / 6.0;
 
   let finalRotation = definition.flips + initialRotation * rotationMultiplier;
-  for (
-    let flipNumber = 1;
-    Math.abs(cumulativeRotation) < Math.abs(finalRotation);
-    flipNumber++
-  ) {
+  let isLastFlip = false;
+  for (let flipNumber = 1; !isLastFlip; flipNumber++) {
     let flipFinalRotation = Math.min(flipNumber, Math.abs(finalRotation));
 
     let rotationDelta = flipFinalRotation - cumulativeRotation;
 
-    let isLastFlip = rotationDelta + cumulativeRotation >= finalRotation;
+    isLastFlip = rotationDelta + cumulativeRotation >= finalRotation;
 
     let position = definition.position;
-    if (definition.twists[flipNumber] > 0 && !isLastFlip) {
+    const currentTwist = definition.twists[flipNumber] || 0;
+    if (currentTwist > 0 && !isLastFlip) {
       position = "StraightArmsDown";
     }
     let flipSpeed = relativePositionSpeeds[position];
@@ -319,9 +327,9 @@ export function makeSkillFrames(
       // Distribute twist proportionally based on time duration
       let totalKickoutTime =
         kickoutTransitionTime + renderProps.kickoutRotation;
+      const currentTwist = definition.twists[flipNumber] || 0;
       let twistAtKickout =
-        (kickoutTransitionTime / totalKickoutTime) *
-        definition.twists[flipNumber];
+        (kickoutTransitionTime / totalKickoutTime) * currentTwist;
 
       addFrameDelta(
         "Kickout Position",
@@ -334,15 +342,16 @@ export function makeSkillFrames(
       addFrameDelta(
         "Landing Position",
         renderProps.kickoutRotation,
-        definition.twists[flipNumber] - twistAtKickout,
+        currentTwist - twistAtKickout,
         bedPositionToJoints[definition.endingPosition],
         1,
       );
     } else {
+      const currentTwist = definition.twists[flipNumber] || 0;
       addFrameDelta(
         "Rotation Position",
         flipFinalRotation - cumulativeRotation,
-        definition.twists[flipNumber],
+        currentTwist,
         isLastFlip ? bedPositionToJoints[definition.endingPosition] : position,
         flipSpeed,
       );
