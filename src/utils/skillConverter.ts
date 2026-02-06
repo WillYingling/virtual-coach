@@ -113,10 +113,7 @@ function getRotationMultiplier(
   return rotationMultiplier;
 }
 
-function makePositionJumpFrames(
-  definition: SkillDefinition,
-  renderProps?: RenderProperties,
-): Skill {
+function makePositionJumpFrames(definition: SkillDefinition): Skill {
   let frames: AthletePosition[] = [];
   let timestamps: number[] = [];
   // Placeholder implementation
@@ -126,7 +123,7 @@ function makePositionJumpFrames(
   frames.push({
     rotation: rotation,
     twist: 0,
-    joints: positions[startingJoints],
+    joints: positions[startingJoints as keyof typeof positions],
   });
   timestamps.push(0);
 
@@ -134,7 +131,7 @@ function makePositionJumpFrames(
     frames.push({
       rotation: rotation,
       twist: 0,
-      joints: positions[startingJoints],
+      joints: positions[startingJoints as keyof typeof positions],
     });
     timestamps.push(0.4);
 
@@ -148,7 +145,7 @@ function makePositionJumpFrames(
     frames.push({
       rotation: rotation,
       twist: 0,
-      joints: positions[endJoints],
+      joints: positions[endJoints as keyof typeof positions],
     });
     timestamps.push(0.6);
   } else {
@@ -164,7 +161,7 @@ function makePositionJumpFrames(
   frames.push({
     rotation: rotation,
     twist: definition.twists[0] || 0,
-    joints: positions[endJoints],
+    joints: positions[endJoints as keyof typeof positions],
   });
   timestamps.push(1);
 
@@ -180,7 +177,7 @@ export function makeSkillFrames(
   renderProps?: RenderProperties,
 ): Skill {
   if (definition.flips === 0) {
-    return makePositionJumpFrames(definition, renderProps);
+    return makePositionJumpFrames(definition);
   }
   console.log("Making skill frames for:", definition);
   let rotationMultiplier = getRotationMultiplier(definition, incomingTwist);
@@ -213,7 +210,7 @@ export function makeSkillFrames(
     frames.push({
       rotation: cumulativeRotation * rotationMultiplier,
       twist: cumulativeTwist,
-      joints: positions[position],
+      joints: positions[position as keyof typeof positions],
     });
     timestamps.push(elapsedTime);
   };
@@ -223,7 +220,7 @@ export function makeSkillFrames(
   frames.push({
     rotation: initialRotation, // Use raw rotation without multiplier
     twist: 0,
-    joints: positions[startingJoints],
+    joints: positions[startingJoints as keyof typeof positions],
   });
   timestamps.push(0);
 
