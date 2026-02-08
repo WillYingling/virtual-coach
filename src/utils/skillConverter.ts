@@ -136,33 +136,37 @@ function makePositionJumpFrames(definition: SkillDefinition): Skill {
     joints: positions[startingJoints as keyof typeof positions],
   });
   timestamps.push(0);
+  let twist = definition.twists[0] || 0;
 
   if (definition.position !== "StraightArmsDown") {
     frames.push({
       rotation: rotation,
-      twist: 0,
+      twist: twist * 0.4,
       joints: positions[startingJoints as keyof typeof positions],
     });
-    timestamps.push(0.4);
+    timestamps.push(0.2);
 
     frames.push({
       rotation: rotation,
-      twist: 0,
-      joints: positions[definition.position],
+      twist: twist * 0.5,
+      joints: positions[definition.position as keyof typeof positions],
     });
+    console.log(
+      "Adding position frame at:",
+      positions[definition.position as keyof typeof positions],
+    );
     timestamps.push(0.5);
 
     frames.push({
       rotation: rotation,
-      twist: 0,
+      twist: twist * 0.6,
       joints: positions[endJoints as keyof typeof positions],
     });
-    timestamps.push(0.6);
+    timestamps.push(0.8);
   } else {
-    // Placeholder for alternative logic
     frames.push({
       rotation: rotation,
-      twist: 0,
+      twist: twist * 0.5,
       joints: positions[definition.position],
     });
     timestamps.push(0.5);
@@ -170,7 +174,7 @@ function makePositionJumpFrames(definition: SkillDefinition): Skill {
 
   frames.push({
     rotation: rotation,
-    twist: definition.twists[0] || 0,
+    twist: twist,
     joints: positions[endJoints as keyof typeof positions],
   });
   timestamps.push(1);

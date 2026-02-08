@@ -14,6 +14,8 @@ export interface AthletePosition {
     rightShoulder: number; // Rotation angle in radians (1 DOF)
     leftThigh: number; // Hip joint rotation angle in radians (1 DOF)
     rightThigh: number; // Hip joint rotation angle in radians (1 DOF)
+    leftThighSpread?: number; // Hip abduction/adduction angle in radians (1 DOF)
+    rightThighSpread?: number; // Hip abduction/adduction angle in radians (1 DOF)
     leftShin: number; // Knee joint rotation angle in radians (1 DOF)
     rightShin: number; // Knee joint rotation angle in radians (1 DOF)
   };
@@ -171,6 +173,8 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
   // Refs for animated joints
   const leftShoulderRef = useRef<THREE.Group>(null);
   const rightShoulderRef = useRef<THREE.Group>(null);
+  const leftThighSpreadRef = useRef<THREE.Group>(null);
+  const rightThighSpreadRef = useRef<THREE.Group>(null);
   const leftThighRef = useRef<THREE.Group>(null);
   const rightThighRef = useRef<THREE.Group>(null);
   const leftShinRef = useRef<THREE.Group>(null);
@@ -218,6 +222,14 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
       }
       if (rightShoulderRef.current) {
         rightShoulderRef.current.rotation.x = joints.rightShoulder;
+      }
+      if (leftThighSpreadRef.current) {
+        const spreadValue = joints.leftThighSpread ?? 0;
+        leftThighSpreadRef.current.rotation.z = spreadValue;
+      }
+      if (rightThighSpreadRef.current) {
+        const spreadValue = joints.rightThighSpread ?? 0;
+        rightThighSpreadRef.current.rotation.z = -spreadValue; // Negative for symmetric spreading
       }
       if (leftThighRef.current) {
         leftThighRef.current.rotation.x = joints.leftThigh;
@@ -303,21 +315,9 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
             </group>
 
             {/* Left Leg */}
-            <group ref={leftThighRef} position={[-0.15, 0, 0]}>
-              {/* Upper leg (thigh) */}
-              <mesh
-                position={[0, -(legSegmentLength / 2), 0]}
-                renderOrder={1}
-                material={boxMaterials}
-              >
-                <boxGeometry args={[legWidth, legSegmentLength, legDepth]} />
-              </mesh>
-              {/* Knee joint */}
-              <group
-                ref={leftShinRef}
-                position={[0, -(legSegmentLength + gap), 0]}
-              >
-                {/* Lower leg (shin) */}
+            <group ref={leftThighRef}>
+              <group ref={leftThighSpreadRef} position={[-0.15, 0, 0]}>
+                {/* Upper leg (thigh) */}
                 <mesh
                   position={[0, -(legSegmentLength / 2), 0]}
                   renderOrder={1}
@@ -325,25 +325,29 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
                 >
                   <boxGeometry args={[legWidth, legSegmentLength, legDepth]} />
                 </mesh>
+                {/* Knee joint */}
+                <group
+                  ref={leftShinRef}
+                  position={[0, -(legSegmentLength + gap), 0]}
+                >
+                  {/* Lower leg (shin) */}
+                  <mesh
+                    position={[0, -(legSegmentLength / 2), 0]}
+                    renderOrder={1}
+                    material={boxMaterials}
+                  >
+                    <boxGeometry
+                      args={[legWidth, legSegmentLength, legDepth]}
+                    />
+                  </mesh>
+                </group>
               </group>
             </group>
 
             {/* Right Leg */}
-            <group ref={rightThighRef} position={[0.15, 0, 0]}>
-              {/* Upper leg (thigh) */}
-              <mesh
-                position={[0, -(legSegmentLength / 2), 0]}
-                renderOrder={1}
-                material={boxMaterials}
-              >
-                <boxGeometry args={[legWidth, legSegmentLength, legDepth]} />
-              </mesh>
-              {/* Knee joint */}
-              <group
-                ref={rightShinRef}
-                position={[0, -(legSegmentLength + gap), 0]}
-              >
-                {/* Lower leg (shin) */}
+            <group ref={rightThighRef}>
+              <group ref={rightThighSpreadRef} position={[0.15, 0, 0]}>
+                {/* Upper leg (thigh) */}
                 <mesh
                   position={[0, -(legSegmentLength / 2), 0]}
                   renderOrder={1}
@@ -351,6 +355,22 @@ const Athlete = forwardRef<THREE.Group, AthleteProps>((props, ref) => {
                 >
                   <boxGeometry args={[legWidth, legSegmentLength, legDepth]} />
                 </mesh>
+                {/* Knee joint */}
+                <group
+                  ref={rightShinRef}
+                  position={[0, -(legSegmentLength + gap), 0]}
+                >
+                  {/* Lower leg (shin) */}
+                  <mesh
+                    position={[0, -(legSegmentLength / 2), 0]}
+                    renderOrder={1}
+                    material={boxMaterials}
+                  >
+                    <boxGeometry
+                      args={[legWidth, legSegmentLength, legDepth]}
+                    />
+                  </mesh>
+                </group>
               </group>
             </group>
 

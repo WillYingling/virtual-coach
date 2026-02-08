@@ -6,8 +6,8 @@ import * as THREE from "three";
 
 export const positions = {
   Tuck: {
-    leftShoulder: (3 * Math.PI) / 2, // Equivalent to -π/2, but interpolates shorter path from π
-    rightShoulder: (3 * Math.PI) / 2,
+    leftShoulder: (7 * Math.PI) / 4,
+    rightShoulder: (7 * Math.PI) / 4,
     leftThigh: (-3 * Math.PI) / 4,
     rightThigh: (-3 * Math.PI) / 4,
 
@@ -15,8 +15,8 @@ export const positions = {
     rightShin: (3 * Math.PI) / 4,
   },
   Pike: {
-    leftShoulder: (3 * Math.PI) / 2,
-    rightShoulder: (3 * Math.PI) / 2,
+    leftShoulder: (7 * Math.PI) / 4,
+    rightShoulder: (7 * Math.PI) / 4,
     leftThigh: (-3 * Math.PI) / 4,
     rightThigh: (-3 * Math.PI) / 4,
 
@@ -38,6 +38,16 @@ export const positions = {
     leftThigh: 0,
     rightThigh: 0,
 
+    leftShin: 0,
+    rightShin: 0,
+  },
+  Straddle: {
+    leftShoulder: (7 * Math.PI) / 4,
+    rightShoulder: (7 * Math.PI) / 4,
+    leftThigh: (-3 * Math.PI) / 4,
+    rightThigh: (-3 * Math.PI) / 4,
+    leftThighSpread: -Math.PI / 4,
+    rightThighSpread: -Math.PI / 4,
     leftShin: 0,
     rightShin: 0,
   },

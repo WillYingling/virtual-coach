@@ -1,5 +1,14 @@
 [
   {
+    "name": "1/2 Twist",
+    "startingPosition": "Standing",
+    "endingPosition": "Standing",
+    "flips": 0,
+    "twists": [0.5],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
+  },
+  {
     "name": "Front Flip",
     "startingPosition": "Standing",
     "endingPosition": "Standing",
@@ -323,7 +332,7 @@
     "flips": 0,
     "twists": [0, 0],
     "position": "StraightArmsDown",
-    "possiblePositions": ["StraightArmsDown", "Tuck", "Pike"]
+    "possiblePositions": ["StraightArmsDown", "Tuck", "Pike", "Straddle"]
   },
   {
     "name": "Triffis half-out",

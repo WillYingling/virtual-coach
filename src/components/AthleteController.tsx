@@ -219,6 +219,16 @@ function AthleteController({
             nextPosition.joints.rightThigh,
             factor,
           ),
+          leftThighSpread: interpolate(
+            currentPosition.joints.leftThighSpread ?? 0,
+            nextPosition.joints.leftThighSpread ?? 0,
+            factor,
+          ),
+          rightThighSpread: interpolate(
+            currentPosition.joints.rightThighSpread ?? 0,
+            nextPosition.joints.rightThighSpread ?? 0,
+            factor,
+          ),
           leftShin: interpolate(
             currentPosition.joints.leftShin,
             nextPosition.joints.leftShin,
