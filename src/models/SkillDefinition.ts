@@ -9,6 +9,7 @@ export const BedPosition = {
   Back: "Back",
   Stomach: "Stomach",
   Seated: "Seated",
+  HandsAndKnees: "HandsAndKnees",
 } as const;
 export type BedPosition = (typeof BedPosition)[keyof typeof BedPosition];
 

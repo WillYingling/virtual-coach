@@ -131,6 +131,7 @@ describe("makeSkillFrames", () => {
               [BedPosition.Standing]: 0,
               [BedPosition.Back]: -0.25,
               [BedPosition.Stomach]: 0.25,
+              [BedPosition.HandsAndKnees]: 0.25,
               [BedPosition.Seated]: 0,
             };
 

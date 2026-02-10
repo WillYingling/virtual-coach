@@ -6,6 +6,11 @@ import {
 } from "../models/SkillDefinition";
 import { positions } from "../components/Simulator";
 import type { AthletePosition } from "../components/Athlete";
+import {
+  flipNumber,
+  getRotationMultiplier,
+  startingPositionRotations,
+} from "./skillUtils";
 
 export interface RenderProperties {
   stallRotation: number; // rotation during stall
@@ -26,14 +31,7 @@ const bedPositionToJoints = {
   [BedPosition.Back]: "StraightArmsDown", // Lying on back
   [BedPosition.Stomach]: "StraightArmsUp", // Lying on stomach
   [BedPosition.Seated]: "Pike", // Seated position similar to pike
-};
-
-// Map starting positions to initial rotation values
-const startingPositionRotations = {
-  [BedPosition.Standing]: 0,
-  [BedPosition.Back]: -0.25, // Half flip (180°) from standing
-  [BedPosition.Stomach]: 0.25, // Half flip (180°) from standing
-  [BedPosition.Seated]: 0, // Quarter flip (90°) from standing
+  [BedPosition.HandsAndKnees]: "HandsAndKnees", // Hands and knees position
 };
 
 export function totalTwists(definition: SkillDefinition): number {
@@ -42,6 +40,27 @@ export function totalTwists(definition: SkillDefinition): number {
     const validTwist = typeof twist === "number" && !isNaN(twist) ? twist : 0;
     return sum + validTwist;
   }, 0);
+}
+
+// Default skill definition for calculating rotation multiplier based only on cumulative twist
+const defaultSkill: SkillDefinition = {
+  name: "",
+  startingPosition: BedPosition.Standing,
+  endingPosition: BedPosition.Standing,
+  flips: 0,
+  twists: [],
+  position: Position.Straight,
+  isBackSkill: false,
+};
+
+function startingRotation(
+  definition: SkillDefinition,
+  cumulativeTwist: number,
+): number {
+  let rotationMultiplier = getRotationMultiplier(defaultSkill, cumulativeTwist);
+  return (
+    startingPositionRotations[definition.startingPosition] * rotationMultiplier
+  );
 }
 
 export function getRenderPropertiesForSkill(
@@ -104,81 +123,46 @@ function normalizeTimestamps(timestamps: number[]): number[] {
   return timestamps.map((t) => (t - start) / duration);
 }
 
-function getRotationMultiplier(
+function makeNonFlipFrames(
   definition: SkillDefinition,
-  cumulativeTwist: number,
-): number {
-  let rotationMultiplier = 1;
-
-  // If back skill, invert rotation direction
-  if (definition.isBackSkill) {
-    rotationMultiplier *= -1;
-  }
-
-  // If cumulative twist results in athlete facing backward (odd multiples of 0.5), invert rotation
-  if (Math.floor(cumulativeTwist * 2) % 2 !== 0) {
-    rotationMultiplier *= -1;
-  }
-
-  return rotationMultiplier;
-}
-
-function makePositionJumpFrames(definition: SkillDefinition): Skill {
+  incomingTwist: number = 0,
+): Skill {
   let frames: AthletePosition[] = [];
   let timestamps: number[] = [];
   // Placeholder implementation
-  let rotation = startingPositionRotations[definition.startingPosition];
+  let rotationMultiplier = getRotationMultiplier(definition, incomingTwist);
+  // TODO: Starting rotation needs to be adjusted for incoming twist, but not rotation direction
+  let initialRotation = startingRotation(definition, incomingTwist);
   let startingJoints = bedPositionToJoints[definition.startingPosition];
-  let endJoints = bedPositionToJoints[definition.startingPosition];
-  frames.push({
-    rotation: rotation,
-    twist: 0,
-    joints: positions[startingJoints as keyof typeof positions],
-  });
-  timestamps.push(0);
-  let twist = definition.twists[0] || 0;
+  let endJoints = bedPositionToJoints[definition.endingPosition];
+
+  let addFrameDelta = (position: string, timestamp: number) => {
+    // debugLog("Adding frame", {
+    //   position,
+    //   timestamp
+    // });
+
+    let rotationProgress = definition.flips * timestamp;
+    frames.push({
+      rotation: rotationProgress * rotationMultiplier + initialRotation,
+      twist: (definition.twists[0] || 0) * timestamp,
+      joints: positions[position as keyof typeof positions],
+    });
+    timestamps.push(timestamp);
+  };
+  addFrameDelta(startingJoints, 0);
 
   if (definition.position !== "StraightArmsDown") {
-    frames.push({
-      rotation: rotation,
-      twist: twist * 0.4,
-      joints: positions[startingJoints as keyof typeof positions],
-    });
-    timestamps.push(0.2);
-
-    frames.push({
-      rotation: rotation,
-      twist: twist * 0.5,
-      joints: positions[definition.position as keyof typeof positions],
-    });
-    console.log(
-      "Adding position frame at:",
-      positions[definition.position as keyof typeof positions],
-    );
-    timestamps.push(0.5);
-
-    frames.push({
-      rotation: rotation,
-      twist: twist * 0.6,
-      joints: positions[endJoints as keyof typeof positions],
-    });
-    timestamps.push(0.8);
+    addFrameDelta(startingJoints, 0.4);
+    addFrameDelta(definition.position, 0.5);
+    addFrameDelta(endJoints, 0.6);
   } else {
-    frames.push({
-      rotation: rotation,
-      twist: twist * 0.5,
-      joints: positions[definition.position],
-    });
-    timestamps.push(0.5);
+    addFrameDelta(definition.position, 0.5);
   }
 
-  frames.push({
-    rotation: rotation,
-    twist: twist,
-    joints: positions[endJoints as keyof typeof positions],
-  });
-  timestamps.push(1);
+  addFrameDelta(endJoints, 1);
 
+  console.log("Generated position jump frames:", frames);
   return {
     positions: frames,
     timestamps: timestamps,
@@ -192,8 +176,8 @@ export function makeSkillFrames(
   debug: boolean = true,
 ): Skill {
   const debugLog = debug ? console.log : () => {};
-  if (definition.flips === 0) {
-    return makePositionJumpFrames(definition);
+  if (flipNumber(definition) === 0) {
+    return makeNonFlipFrames(definition, incomingTwist);
   }
 
   debugLog("Making skill frames for:", definition);
@@ -202,7 +186,7 @@ export function makeSkillFrames(
   let frames: AthletePosition[] = [];
   let timestamps: number[] = [];
 
-  let initialRotation = startingPositionRotations[definition.startingPosition];
+  let initialRotation = startingRotation(definition, incomingTwist);
   let cumulativeRotation = initialRotation * rotationMultiplier;
   let cumulativeTwist = 0;
   let elapsedTime = 0;

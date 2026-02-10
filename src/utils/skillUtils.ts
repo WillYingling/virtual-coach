@@ -1,4 +1,4 @@
-import { Position } from "../models/SkillDefinition";
+import { Position, BedPosition } from "../models/SkillDefinition";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import { CONSTANTS } from "../constants";
 import { totalTwists } from "./skillConverter";
@@ -20,16 +20,17 @@ export function formatPositionDisplay(position: Position): string {
 /**
  * Get category name based on flip count
  */
-export function getFlipCategory(flips: number): string {
-  if (flips < 0.5) {
+export function getFlipCategory(skill: SkillDefinition): string {
+  const flips = flipNumber(skill);
+  if (flips < 1) {
     return "No Flips";
-  } else if (flips >= 0.5 && flips < 1.5) {
+  } else if (flips === 1) {
     return "Single Flips";
-  } else if (flips >= 1.5 && flips < 2.5) {
+  } else if (flips === 2) {
     return "Double Flips";
-  } else if (flips >= 2.5 && flips < 3.5) {
+  } else if (flips === 3) {
     return "Triple Flips";
-  } else if (flips >= 3.5 && flips < 4.5) {
+  } else if (flips === 4) {
     return "Quadruple Flips";
   } else {
     return `${flips} Flips`;
@@ -44,7 +45,7 @@ export function groupSkillsByFlips(
 ): Record<string, SkillDefinition[]> {
   const groups = skills.reduce(
     (groups, skill) => {
-      const category = getFlipCategory(skill.flips);
+      const category = getFlipCategory(skill);
       if (!groups[category]) {
         groups[category] = [];
       }
@@ -206,4 +207,41 @@ export function routineDifficultyScore(
   }
 
   return roundToTwo(totalScore);
+}
+
+// Map starting positions to initial rotation values
+export const startingPositionRotations = {
+  [BedPosition.Standing]: 0,
+  [BedPosition.Back]: -0.25, // Half flip (180°) from standing
+  [BedPosition.Stomach]: 0.25, // Half flip (180°) from standing
+  [BedPosition.HandsAndKnees]: 0.25,
+  [BedPosition.Seated]: 0, // Quarter flip (90°) from standing
+};
+
+export function getRotationMultiplier(
+  definition: SkillDefinition,
+  cumulativeTwist: number,
+): number {
+  let rotationMultiplier = 1;
+
+  // If back skill, invert rotation direction
+  if (definition.isBackSkill) {
+    rotationMultiplier *= -1;
+  }
+
+  // If cumulative twist results in athlete facing backward (odd multiples of 0.5), invert rotation
+  if (Math.floor(cumulativeTwist * 2) % 2 !== 0) {
+    rotationMultiplier *= -1;
+  }
+
+  return rotationMultiplier;
+}
+
+export function flipNumber(skill: SkillDefinition): number {
+  let rotationMultiplier = getRotationMultiplier(skill, 0);
+  let startingRotation = startingPositionRotations[skill.startingPosition];
+
+  // Count the number of times the athlete goes over their head
+  let adjustedFlips = skill.flips + startingRotation * rotationMultiplier;
+  return Math.round(adjustedFlips);
 }

@@ -9,6 +9,116 @@
     "possiblePositions": ["StraightArmsDown"]
   },
   {
+    "name": "Full Twist",
+    "startingPosition": "Standing",
+    "endingPosition": "Standing",
+    "flips": 0,
+    "twists": [1],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
+  },
+  {
+    "name": "Seat Drop",
+    "startingPosition": "Standing",
+    "endingPosition": "Seated",
+    "flips": 0,
+    "twists": [0],
+    "position": "Pike",
+    "possiblePositions": ["Pike"]
+  },
+  {
+    "name": "Swivel Hips",
+    "startingPosition": "Seated",
+    "endingPosition": "Seated",
+    "flips": 0,
+    "twists": [0.5],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
+  },
+  {
+    "name": "1/2 Twist to Seat",
+    "startingPosition": "Standing",
+    "endingPosition": "Seated",
+    "flips": 0,
+    "twists": [0.5],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
+  },
+  {
+    "name": "1/2 Twist Seat To Feet",
+    "startingPosition": "Seated",
+    "endingPosition": "Standing",
+    "flips": 0,
+    "twists": [0.5],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
+  },
+  {
+    "name": "Seat to Feet",
+    "endingPosition": "Standing",
+    "startingPosition": "Seated",
+    "flips": 0,
+    "twists": [0],
+    "position": "Pike",
+    "possiblePositions": ["Pike"]
+  },
+  {
+    "name": "Seat to Stomach",
+    "endingPosition": "Stomach",
+    "startingPosition": "Seated",
+    "flips": 0.25,
+    "twists": [0],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
+  },
+  {
+    "name": "Seat to Hands and Knees",
+    "endingPosition": "HandsAndKnees",
+    "startingPosition": "Seated",
+    "flips": 0.25,
+    "twists": [0],
+    "position": "Pike",
+    "possiblePositions": ["Pike"]
+  },
+  {
+    "name": "Stomach to Feet",
+    "endingPosition": "Standing",
+    "startingPosition": "Stomach",
+    "flips": 0.25,
+    "twists": [0],
+    "isBackSkill": true,
+    "position": "Pike",
+    "possiblePositions": ["Pike"]
+  },
+  {
+    "name": "Stomach to Seat",
+    "endingPosition": "Seated",
+    "startingPosition": "Stomach",
+    "flips": 0.25,
+    "twists": [0],
+    "isBackSkill": true,
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
+  },
+  {
+    "name": "Hands and Knees Drop",
+    "startingPosition": "Standing",
+    "endingPosition": "HandsAndKnees",
+    "flips": 0.25,
+    "twists": [0, 0],
+    "position": "Tuck",
+    "possiblePositions": ["Tuck"]
+  },
+  {
+    "name": "Hands and Knees to Stomach",
+    "endingPosition": "Stomach",
+    "startingPosition": "HandsAndKnees",
+    "flips": 0,
+    "twists": [0],
+    "position": "Tuck",
+    "possiblePositions": ["Tuck"]
+  },
+  {
     "name": "Front Flip",
     "startingPosition": "Standing",
     "endingPosition": "Standing",
@@ -384,7 +494,36 @@
     "startingPosition": "Standing",
     "endingPosition": "Stomach",
     "flips": 0.25,
-    "twists": [0, 0],
+    "twists": [0],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
+  },
+  {
+    "name": "1/2 Twist to Stomach",
+    "startingPosition": "Standing",
+    "endingPosition": "Stomach",
+    "flips": 0.25,
+    "twists": [0.5],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"],
+    "isBackSkill": true
+  },
+  {
+    "name": "Cruise",
+    "startingPosition": "Stomach",
+    "endingPosition": "Stomach",
+    "flips": 0.5,
+    "twists": [0.5],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"],
+    "isBackSkill": true
+  },
+  {
+    "name": "Cradle",
+    "startingPosition": "Back",
+    "endingPosition": "Back",
+    "flips": 0.5,
+    "twists": [0.5],
     "position": "StraightArmsDown",
     "possiblePositions": ["StraightArmsDown"]
   },
@@ -393,10 +532,19 @@
     "startingPosition": "Standing",
     "endingPosition": "Back",
     "flips": 0.25,
-    "twists": [0, 0],
+    "twists": [0],
     "position": "StraightArmsDown",
     "possiblePositions": ["StraightArmsDown"],
     "isBackSkill": true
+  },
+  {
+    "name": "Back to Feet",
+    "startingPosition": "Back",
+    "endingPosition": "Standing",
+    "flips": 0.25,
+    "twists": [0],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
   },
   {
     "name": "3/4 Back Flip",

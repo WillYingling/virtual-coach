@@ -51,6 +51,14 @@ export const positions = {
     leftShin: 0,
     rightShin: 0,
   },
+  HandsAndKnees: {
+    leftShoulder: (3 * Math.PI) / 2,
+    rightShoulder: (3 * Math.PI) / 2,
+    leftThigh: -Math.PI / 2,
+    rightThigh: -Math.PI / 2,
+    leftShin: Math.PI / 2,
+    rightShin: Math.PI / 2,
+  },
 };
 
 const trampolineHeight = 1.6;

@@ -259,57 +259,27 @@ function AthleteController({
       athletePositionRef.current.twist = interpolatedPos.twist;
       athletePositionRef.current.joints = interpolatedPos.joints;
     } else {
-      // During bounce phase, interpolate from last position back to first position
-      const bounceProgress = (curTime - JumpPhase) / BouncePhase;
+      // During bounce phase, keep the athlete in the landing position
       const lastPos = positions[positions.length - 1];
-      const firstPos = positions[0];
-
-      const interpolate = (start: number, end: number, f: number) => {
-        return start + (end - start) * f;
-      };
 
       const totalLegLength = 2 * 0.48 + 0.1;
       const feetHeight = height;
       const rootHeight = feetHeight + totalLegLength;
 
-      // During bounce phase, keep rotation and twist constant (no rotation while on trampoline)
-      // Only interpolate joints to prepare for next skill
+      // During bounce phase, keep rotation, twist, and joints constant
+      // The athlete should maintain the landing position until the next jump phase
 
       athletePositionRef.current.height = rootHeight;
       athletePositionRef.current.rotation = lastPos.rotation;
       athletePositionRef.current.twist =
         lastPos.twist + cumulativeTwistRef.current;
       athletePositionRef.current.joints = {
-        leftShoulder: interpolate(
-          lastPos.joints.leftShoulder,
-          firstPos.joints.leftShoulder,
-          bounceProgress,
-        ),
-        rightShoulder: interpolate(
-          lastPos.joints.rightShoulder,
-          firstPos.joints.rightShoulder,
-          bounceProgress,
-        ),
-        leftThigh: interpolate(
-          lastPos.joints.leftThigh,
-          firstPos.joints.leftThigh,
-          bounceProgress,
-        ),
-        rightThigh: interpolate(
-          lastPos.joints.rightThigh,
-          firstPos.joints.rightThigh,
-          bounceProgress,
-        ),
-        leftShin: interpolate(
-          lastPos.joints.leftShin,
-          firstPos.joints.leftShin,
-          bounceProgress,
-        ),
-        rightShin: interpolate(
-          lastPos.joints.rightShin,
-          firstPos.joints.rightShin,
-          bounceProgress,
-        ),
+        leftShoulder: lastPos.joints.leftShoulder,
+        rightShoulder: lastPos.joints.rightShoulder,
+        leftThigh: lastPos.joints.leftThigh,
+        rightThigh: lastPos.joints.rightThigh,
+        leftShin: lastPos.joints.leftShin,
+        rightShin: lastPos.joints.rightShin,
       };
     }
   });
