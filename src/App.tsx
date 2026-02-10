@@ -87,7 +87,7 @@ function App() {
             <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
               <SportsGymnasticsIcon sx={{ mr: 2 }} />
               <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-                Trampoline Skill Generator
+                Trampoline Virtual Coach
               </Typography>
             </Box>
             <Typography

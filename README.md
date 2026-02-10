@@ -1,6 +1,6 @@
-# Trampoline Skill Generator
+# Trampoline Virtual Coach
 
-A React-based web application for generating and managing trampoline skill routines with 3D visualization.
+A React-based web application for coaching and managing trampoline skill routines with 3D visualization.
 
 ## Features
 
@@ -30,8 +30,8 @@ A React-based web application for generating and managing trampoline skill routi
 ### Installation
 
 ```bash
-git clone https://github.com/[YOUR_USERNAME]/skill-generator.git
-cd skill-generator
+git clone https://github.com/[YOUR_USERNAME]/virtual-coach.git
+cd virtual-coach
 npm install
 npm run dev
 ```
@@ -49,7 +49,7 @@ This project is configured for automatic deployment to GitHub Pages.
 2. **Update the homepage URL** in `package.json`:
 
    ```json
-   "homepage": "https://[YOUR_GITHUB_USERNAME].github.io/skill-generator"
+   "homepage": "https://[YOUR_GITHUB_USERNAME].github.io/virtual-coach"
    ```
 
 3. **Enable GitHub Pages**:
@@ -58,7 +58,7 @@ This project is configured for automatic deployment to GitHub Pages.
 
 4. **Push changes** to the main branch to trigger automatic deployment
 
-The site will be available at `https://[YOUR_USERNAME].github.io/skill-generator`
+The site will be available at `https://[YOUR_USERNAME].github.io/virtual-coach`
 
 ### Manual Deployment
 

@@ -1,9 +1,9 @@
 {
-  "name": "skill-generator",
+  "name": "virtual-coach",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://WillYingling.github.io/skill-generator",
+  "homepage": "https://WillYingling.github.io/virtual-coach",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
