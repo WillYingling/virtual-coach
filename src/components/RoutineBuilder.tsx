@@ -6,7 +6,6 @@ import {
   Typography,
   Stack,
   Paper,
-  Chip,
   Button,
   IconButton,
   Switch,
@@ -25,8 +24,8 @@ import WarningIcon from "@mui/icons-material/Warning";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import type { RoutineRequirement } from "../models/RoutineRequirements";
 import {
-  formatPositionDisplay,
   routineDifficultyScore,
+  getSkillDisplayName,
 } from "../utils/skillUtils";
 import {
   isRoutineValid,
@@ -273,15 +272,8 @@ const RoutineBuilder = memo(function RoutineBuilder({
                   <Stack direction="row" alignItems="center" spacing={2}>
                     <Stack flex={1}>
                       <Typography variant="body1">
-                        <strong>{idx + 1}.</strong> {def.name}
+                        <strong>{idx + 1}.</strong> {getSkillDisplayName(def)}
                       </Typography>
-                      <Chip
-                        label={formatPositionDisplay(def.position)}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                        sx={{ mt: 1, alignSelf: "flex-start" }}
-                      />
                     </Stack>
                     <Stack direction="row" spacing={0.5}>
                       <IconButton

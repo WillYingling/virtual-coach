@@ -18,6 +18,35 @@ export function formatPositionDisplay(position: Position): string {
 }
 
 /**
+ * Get readable position name for display in skill names
+ */
+export function formatPositionName(position: Position): string {
+  if (position === Position.Straight) {
+    return "Straight";
+  } else if (position === Position.Pike) {
+    return "Pike";
+  } else if (position === Position.Tuck) {
+    return "Tuck";
+  }
+  return position;
+}
+
+/**
+ * Get skill display name with position suffix if multiple positions are possible
+ */
+export function getSkillDisplayName(skill: SkillDefinition): string {
+  const hasMultiplePositions =
+    skill.possiblePositions && skill.possiblePositions.length > 1;
+
+  if (hasMultiplePositions) {
+    const positionName = formatPositionName(skill.position);
+    return `${skill.name} ${positionName}`;
+  }
+
+  return skill.name;
+}
+
+/**
  * Get category name based on flip count
  */
 export function getFlipCategory(skill: SkillDefinition): string {
