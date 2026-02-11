@@ -12,6 +12,7 @@ import {
   Switch,
   Alert,
   Collapse,
+  Box,
 } from "@mui/material";
 import { useState, useMemo, memo } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -22,6 +23,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import RemoveIcon from "@mui/icons-material/Remove";
 import WarningIcon from "@mui/icons-material/Warning";
 import type { SkillDefinition } from "../models/SkillDefinition";
+import type { RoutineRequirement } from "../models/RoutineRequirements";
 import {
   formatPositionDisplay,
   routineDifficultyScore,
@@ -32,12 +34,15 @@ import {
 } from "../utils/routineValidation";
 import { ActionIconButton } from "./common/ActionIconButton";
 import { CONSTANTS } from "../constants";
+import { useRoutineRequirements } from "../hooks/useRoutineRequirements";
+import RoutineRequirementSelector from "./RoutineRequirementSelector";
+import RequirementValidator from "./RequirementValidator";
 
 interface RoutineBuilderProps {
   routine: SkillDefinition[];
   onPlayRoutine: () => void;
   onClearRoutine: () => void;
-  onRandomizeRoutine: () => void;
+  onRandomizeRoutine: (requirement?: RoutineRequirement | null) => void;
   onRemoveSkill: (index: number) => void;
   onMoveSkill: (fromIndex: number, toIndex: number) => void;
   skillDefinitionsLength: number;
@@ -54,21 +59,37 @@ const RoutineBuilder = memo(function RoutineBuilder({
 }: RoutineBuilderProps) {
   const [useWomensScoring, setUseWomensScoring] = useState(false);
 
-  // Memoize expensive validation calculations
-  const { routineIsValid, validationErrors, hasTriples, totalDifficulty } =
-    useMemo(() => {
-      const hasTriples = routine.some((skill) => skill.flips >= 3);
-      const routineIsValid = isRoutineValid(routine);
-      const validationErrors = getRoutineValidationErrors(routine);
-      const totalDifficulty = routineDifficultyScore(routine, useWomensScoring);
+  // Routine Requirements hook
+  const {
+    selectedRequirementId,
+    availableRequirements,
+    selectedRequirement,
+    setSelectedRequirementId,
+    validateRoutine,
+  } = useRoutineRequirements();
 
-      return {
-        hasTriples,
-        routineIsValid,
-        validationErrors,
-        totalDifficulty,
-      };
-    }, [routine, useWomensScoring]);
+  // Memoize expensive validation calculations
+  const {
+    routineIsValid,
+    validationErrors,
+    hasTriples,
+    totalDifficulty,
+    requirementValidation,
+  } = useMemo(() => {
+    const hasTriples = routine.some((skill) => skill.flips >= 3);
+    const routineIsValid = isRoutineValid(routine);
+    const validationErrors = getRoutineValidationErrors(routine);
+    const totalDifficulty = routineDifficultyScore(routine, useWomensScoring);
+    const requirementValidation = validateRoutine(routine);
+
+    return {
+      hasTriples,
+      routineIsValid,
+      validationErrors,
+      totalDifficulty,
+      requirementValidation,
+    };
+  }, [routine, useWomensScoring, validateRoutine]);
 
   return (
     <Card
@@ -90,7 +111,7 @@ const RoutineBuilder = memo(function RoutineBuilder({
               variant="outlined"
               size="small"
               startIcon={<ShuffleIcon />}
-              onClick={onRandomizeRoutine}
+              onClick={() => onRandomizeRoutine(selectedRequirement)}
               disabled={skillDefinitionsLength === 0}
             >
               Randomize
@@ -120,6 +141,15 @@ const RoutineBuilder = memo(function RoutineBuilder({
       />
       <Divider />
       <CardContent sx={{ flex: 1, overflow: "auto", py: 2 }}>
+        {/* Routine Requirements Selector */}
+        <Box sx={{ mb: 3 }}>
+          <RoutineRequirementSelector
+            availableRequirements={availableRequirements}
+            selectedRequirementId={selectedRequirementId}
+            onRequirementChange={setSelectedRequirementId}
+          />
+        </Box>
+
         {routine.length === 0 ? (
           <Typography color="text.secondary" sx={{ fontStyle: "italic" }}>
             No skills in routine. Add skills from the library below.
@@ -193,6 +223,23 @@ const RoutineBuilder = memo(function RoutineBuilder({
                 )}
               </Stack>
             </Paper>
+
+            {/* Routine Requirements Validation */}
+            {requirementValidation.length > 0 && (
+              <Box sx={{ mb: 2 }}>
+                <RequirementValidator
+                  validationResults={requirementValidation}
+                  title={
+                    selectedRequirement?.name
+                      ? `Requirements: ${selectedRequirement.name}`
+                      : "Requirements"
+                  }
+                  showProgress={true}
+                  collapsible={true}
+                  defaultExpanded={false}
+                />
+              </Box>
+            )}
 
             {/* Routine Validation Warning */}
             <Collapse in={!routineIsValid && routine.length > 1}>

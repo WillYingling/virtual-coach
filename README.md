@@ -9,7 +9,6 @@ A React-based web application for coaching and managing trampoline skill routine
 - 🎬 **3D Simulator**: Visualize skills with realistic animations using Three.js
 - 📱 **Mobile-Friendly**: Responsive design optimized for all devices
 - 🎨 **Dark Theme**: Modern, professional interface
-- ⚖️ **Dual Scoring**: Support for both men's and women's scoring systems
 - ✏️ **Routine Editing**: Add, remove, and reorder skills in your routine
 
 ## Technologies Used

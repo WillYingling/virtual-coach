@@ -162,7 +162,6 @@ function makeNonFlipFrames(
 
   addFrameDelta(endJoints, 1);
 
-  console.log("Generated position jump frames:", frames);
   return {
     positions: frames,
     timestamps: timestamps,
@@ -173,7 +172,7 @@ export function makeSkillFrames(
   definition: SkillDefinition,
   incomingTwist: number = 0,
   renderProps?: RenderProperties,
-  debug: boolean = true,
+  debug: boolean = false,
 ): Skill {
   const debugLog = debug ? console.log : () => {};
   if (flipNumber(definition) === 0) {

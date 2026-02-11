@@ -5,6 +5,7 @@ import RoutineBuilder from "./components/RoutineBuilder";
 import SkillLibrary from "./components/SkillLibrary";
 import SimulatorModal from "./components/SimulatorModal";
 import type { SkillDefinition } from "./models/SkillDefinition";
+import type { RoutineRequirement } from "./models/RoutineRequirements";
 import { useSkillDefinitions, useRoutine } from "./hooks/useSkills";
 import { useSimulator } from "./hooks/useSimulator";
 
@@ -49,6 +50,13 @@ function App() {
   const handlePlayRoutine = useCallback(() => {
     playRoutine(routine);
   }, [routine, playRoutine]);
+
+  const handleRandomizeRoutine = useCallback(
+    (requirement?: RoutineRequirement | null) => {
+      randomizeRoutine(requirement);
+    },
+    [randomizeRoutine],
+  );
 
   return (
     <Box
@@ -152,7 +160,7 @@ function App() {
               routine={routine}
               onPlayRoutine={handlePlayRoutine}
               onClearRoutine={clearRoutine}
-              onRandomizeRoutine={randomizeRoutine}
+              onRandomizeRoutine={handleRandomizeRoutine}
               onRemoveSkill={removeSkill}
               onMoveSkill={moveSkill}
               skillDefinitionsLength={skillDefinitions.length}

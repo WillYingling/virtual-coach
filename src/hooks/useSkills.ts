@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import type { SkillDefinition } from "../models/SkillDefinition";
+import type { RoutineRequirement } from "../models/RoutineRequirements";
 import { Position } from "../models/SkillDefinition";
 import { CONSTANTS } from "../constants";
-import { generateValidRandomRoutine } from "../utils/routineValidation";
+import {
+  generateValidRandomRoutine,
+  generateRequirementCompliantRoutine,
+} from "../utils/routineValidation";
 
 /**
  * Hook for managing skill definitions loaded from JSON
@@ -71,13 +75,24 @@ export function useRoutine(skillDefinitions: SkillDefinition[]) {
     setRoutine([]);
   };
 
-  const randomizeRoutine = () => {
+  const randomizeRoutine = (requirement?: RoutineRequirement | null) => {
     if (skillDefinitions.length === 0) return;
 
-    const validRoutine = generateValidRandomRoutine(
-      skillDefinitions,
-      CONSTANTS.UI.MAX_ROUTINE_SKILLS,
-    );
+    let validRoutine: SkillDefinition[];
+
+    if (requirement) {
+      // Generate a routine that complies with the requirement
+      validRoutine = generateRequirementCompliantRoutine(
+        skillDefinitions,
+        requirement,
+      );
+    } else {
+      // Generate a standard valid routine
+      validRoutine = generateValidRandomRoutine(
+        skillDefinitions,
+        CONSTANTS.UI.MAX_ROUTINE_SKILLS,
+      );
+    }
 
     setRoutine(validRoutine);
   };

@@ -45,7 +45,7 @@
     "possiblePositions": ["StraightArmsDown"]
   },
   {
-    "name": "1/2 Twist Seat To Feet",
+    "name": "1/2 Twist Seat to Feet",
     "startingPosition": "Seated",
     "endingPosition": "Standing",
     "flips": 0,
@@ -536,6 +536,15 @@
     "position": "StraightArmsDown",
     "possiblePositions": ["StraightArmsDown"],
     "isBackSkill": true
+  },
+  {
+    "name": "Stomach to Back",
+    "startingPosition": "Stomach",
+    "endingPosition": "Back",
+    "flips": 0.5,
+    "twists": [0],
+    "position": "StraightArmsDown",
+    "possiblePositions": ["StraightArmsDown"]
   },
   {
     "name": "Back to Feet",
