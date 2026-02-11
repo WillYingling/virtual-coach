@@ -35,6 +35,7 @@ interface SkillLibraryProps {
   onPlaySkill: (definition: SkillDefinition) => void;
   onAddToRoutine: (definition: SkillDefinition) => void;
   onSelectPosition: (skillName: string, position: Position) => void;
+  loading?: boolean;
 }
 
 const SkillLibrary = memo(function SkillLibrary({
@@ -43,6 +44,7 @@ const SkillLibrary = memo(function SkillLibrary({
   onPlaySkill,
   onAddToRoutine,
   onSelectPosition,
+  loading = false,
 }: SkillLibraryProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -83,8 +85,10 @@ const SkillLibrary = memo(function SkillLibrary({
       />
       <Divider />
       <CardContent sx={{ flex: 1, overflow: "auto", py: { xs: 1, sm: 2 } }}>
-        {skillDefinitions.length === 0 ? (
+        {loading ? (
           <Typography color="text.secondary">Loading skills...</Typography>
+        ) : skillDefinitions.length === 0 ? (
+          <Typography color="text.secondary">No skills available.</Typography>
         ) : (
           <Stack spacing={2}>
             {categorizedSkills.map(([category, skills]) => {

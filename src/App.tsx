@@ -1,4 +1,13 @@
-import { Stack, AppBar, Toolbar, Typography, Box, Link } from "@mui/material";
+import {
+  Stack,
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Link,
+  Alert,
+  Collapse,
+} from "@mui/material";
 import SportsGymnasticsIcon from "@mui/icons-material/SportsGymnastics";
 import { useCallback } from "react";
 import RoutineBuilder from "./components/RoutineBuilder";
@@ -10,8 +19,13 @@ import { useSkillDefinitions, useRoutine } from "./hooks/useSkills";
 import { useSimulator } from "./hooks/useSimulator";
 
 function App() {
-  const { skillDefinitions, selectedPositions, selectPosition } =
-    useSkillDefinitions();
+  const {
+    skillDefinitions,
+    selectedPositions,
+    selectPosition,
+    loading,
+    error,
+  } = useSkillDefinitions();
   const {
     routine,
     addToRoutine,
@@ -146,6 +160,18 @@ function App() {
             overflow: "hidden",
           }}
         >
+          {/* Error Display */}
+          <Collapse in={!!error}>
+            {error && (
+              <Alert
+                severity="warning"
+                sx={{ mx: { xs: 1, sm: 2, md: 3 }, mb: 2 }}
+              >
+                {error}
+              </Alert>
+            )}
+          </Collapse>
+
           <Stack
             direction={{ xs: "column", md: "row" }}
             spacing={{ xs: 0.5, sm: 1, md: 2 }} // Reduce spacing for more usable space
@@ -172,6 +198,7 @@ function App() {
               onPlaySkill={handlePlaySkill}
               onAddToRoutine={handleAddToRoutine}
               onSelectPosition={selectPosition}
+              loading={loading}
             />
           </Stack>
         </Box>
