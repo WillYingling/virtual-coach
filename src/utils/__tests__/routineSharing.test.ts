@@ -1,4 +1,3 @@
-// src/utils/__tests__/routineSharing.test.ts
 import {
   base64UrlEncode,
   base64UrlDecode,
@@ -12,13 +11,24 @@ describe("base64url helpers", () => {
     expect(base64UrlDecode(base64UrlEncode(original))).toBe(original);
   });
 
+  it("decodes a known base64url literal without round-tripping", () => {
+    // "hello" in standard base64 is "aGVsbG8=" — base64url strips the '=' padding.
+    expect(base64UrlDecode("aGVsbG8")).toBe("hello");
+  });
+
+  it("decodes a known base64url literal containing a multi-byte character", () => {
+    // "€" (U+20AC) is the 3 bytes 0xE2 0x82 0xAC in UTF-8 — base64url "4oKs".
+    expect(base64UrlDecode("4oKs")).toBe("€");
+  });
+
   it("round-trips a string with UTF-8 characters", () => {
     const original = 'Cody 1 1/2 — "tuck"';
     expect(base64UrlDecode(base64UrlEncode(original))).toBe(original);
   });
 
   it("produces url-safe output (no '+', '/', or '=')", () => {
-    // A string long enough to force padding and '+' or '/' in standard base64.
+    // These characters encode to base64 output containing '+' and '/' in standard base64,
+    // exercising the '+' -> '-' and '/' -> '_' substitutions.
     const original = "???>>>???>>>???>>>";
     const encoded = base64UrlEncode(original);
     expect(encoded).not.toMatch(/[+/=]/);
