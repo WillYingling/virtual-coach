@@ -12,11 +12,13 @@ import {
   Alert,
   Collapse,
   Box,
+  Snackbar,
 } from "@mui/material";
 import { useState, useMemo, memo } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
+import ShareIcon from "@mui/icons-material/Share";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -31,6 +33,7 @@ import {
   isRoutineValid,
   getRoutineValidationErrors,
 } from "../utils/routineValidation";
+import { buildShareUrl } from "../utils/routineSharing";
 import { ActionIconButton } from "./common/ActionIconButton";
 import { CONSTANTS } from "../constants";
 import { useRoutineRequirements } from "../hooks/useRoutineRequirements";
@@ -57,6 +60,7 @@ const RoutineBuilder = memo(function RoutineBuilder({
   skillDefinitionsLength,
 }: RoutineBuilderProps) {
   const [useWomensScoring, setUseWomensScoring] = useState(false);
+  const [toastOpen, setToastOpen] = useState(false);
 
   // Routine Requirements hook
   const {
@@ -89,6 +93,20 @@ const RoutineBuilder = memo(function RoutineBuilder({
       requirementValidation,
     };
   }, [routine, useWomensScoring, validateRoutine]);
+
+  const handleShare = async () => {
+    const url = buildShareUrl(
+      routine,
+      window.location.origin,
+      import.meta.env.BASE_URL || "/",
+    );
+    try {
+      await navigator.clipboard.writeText(url);
+      setToastOpen(true);
+    } catch {
+      window.prompt("Copy this shareable link:", url);
+    }
+  };
 
   return (
     <Card
@@ -124,6 +142,14 @@ const RoutineBuilder = memo(function RoutineBuilder({
                   title="Play routine"
                 >
                   <PlayArrowIcon />
+                </ActionIconButton>
+                <ActionIconButton
+                  variant="success"
+                  size="medium"
+                  onClick={handleShare}
+                  title="Share routine"
+                >
+                  <ShareIcon />
                 </ActionIconButton>
                 <ActionIconButton
                   variant="error"
@@ -327,6 +353,13 @@ const RoutineBuilder = memo(function RoutineBuilder({
           </>
         )}
       </CardContent>
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={2500}
+        onClose={() => setToastOpen(false)}
+        message="Link copied! Paste it to share."
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      />
     </Card>
   );
 });
