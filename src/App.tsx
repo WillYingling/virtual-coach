@@ -18,7 +18,6 @@ import type { RoutineRequirement } from "./models/RoutineRequirements";
 import { useSkillDefinitions, useRoutine } from "./hooks/useSkills";
 import { useSimulator } from "./hooks/useSimulator";
 import { useSharedRoutine } from "./hooks/useSharedRoutine";
-import SharedRoutineDialog from "./components/SharedRoutineDialog";
 
 function App() {
   const {
@@ -49,7 +48,6 @@ function App() {
 
   const sharedRoutine = useSharedRoutine({
     library: skillDefinitions,
-    currentRoutine: routine,
     setRoutine,
   });
 
@@ -236,12 +234,6 @@ function App() {
           </Stack>
         </Box>
       </Box>
-
-      <SharedRoutineDialog
-        open={sharedRoutine.pendingConfirm !== null}
-        onConfirm={sharedRoutine.acceptShared}
-        onCancel={sharedRoutine.dismissShared}
-      />
 
       <SimulatorModal
         open={simulatorOpen}

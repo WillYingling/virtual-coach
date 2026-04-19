@@ -4,21 +4,12 @@ import { processSharedParam } from "../utils/routineSharing";
 
 interface UseSharedRoutineArgs {
   library: SkillDefinition[];
-  currentRoutine: SkillDefinition[];
   setRoutine: (routine: SkillDefinition[]) => void;
 }
 
-interface PendingConfirm {
-  routine: SkillDefinition[];
-  missingCount: number;
-}
-
 export interface SharedRoutineState {
-  pendingConfirm: PendingConfirm | null;
   warning: string | null;
   error: string | null;
-  acceptShared: () => void;
-  dismissShared: () => void;
   dismissWarning: () => void;
   dismissError: () => void;
 }
@@ -37,10 +28,8 @@ function stripSharedParam() {
 
 export function useSharedRoutine({
   library,
-  currentRoutine,
   setRoutine,
 }: UseSharedRoutineArgs): SharedRoutineState {
-  const [pendingConfirm, setPendingConfirm] = useState<PendingConfirm | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [processed, setProcessed] = useState(false);
@@ -51,7 +40,7 @@ export function useSharedRoutine({
 
     const params = new URLSearchParams(window.location.search);
     const raw = params.get("r");
-    const action = processSharedParam(raw, library, currentRoutine.length > 0);
+    const action = processSharedParam(raw, library);
 
     if (action.kind === "none") {
       setProcessed(true);
@@ -66,39 +55,18 @@ export function useSharedRoutine({
       return;
     }
 
-    if (action.kind === "apply") {
-      setRoutine(action.routine);
-      if (action.missingCount > 0) {
-        setWarning(warningMessage(action.missingCount));
-      }
-      return;
+    setRoutine(action.routine);
+    if (action.missingCount > 0) {
+      setWarning(warningMessage(action.missingCount));
     }
+  }, [library, processed, setRoutine]);
 
-    setPendingConfirm({
-      routine: action.routine,
-      missingCount: action.missingCount,
-    });
-  }, [library, processed, currentRoutine.length, setRoutine]);
-
-  const acceptShared = () => {
-    if (!pendingConfirm) return;
-    setRoutine(pendingConfirm.routine);
-    if (pendingConfirm.missingCount > 0) {
-      setWarning(warningMessage(pendingConfirm.missingCount));
-    }
-    setPendingConfirm(null);
-  };
-
-  const dismissShared = () => setPendingConfirm(null);
   const dismissWarning = () => setWarning(null);
   const dismissError = () => setError(null);
 
   return {
-    pendingConfirm,
     warning,
     error,
-    acceptShared,
-    dismissShared,
     dismissWarning,
     dismissError,
   };

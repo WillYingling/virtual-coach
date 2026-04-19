@@ -104,19 +104,14 @@ export function buildShareUrl(
 export type SharedRoutineAction =
   | { kind: "none" }
   | { kind: "apply"; routine: SkillDefinition[]; missingCount: number }
-  | { kind: "confirm"; routine: SkillDefinition[]; missingCount: number }
   | { kind: "error"; message: string };
 
 export function processSharedParam(
   param: string | null,
   library: SkillDefinition[],
-  hasExistingRoutine: boolean,
 ): SharedRoutineAction {
   if (!param) return { kind: "none" };
   const result = decodeRoutineParam(param, library);
   if ("error" in result) return { kind: "error", message: result.error };
-  if (hasExistingRoutine) {
-    return { kind: "confirm", routine: result.routine, missingCount: result.missingCount };
-  }
   return { kind: "apply", routine: result.routine, missingCount: result.missingCount };
 }

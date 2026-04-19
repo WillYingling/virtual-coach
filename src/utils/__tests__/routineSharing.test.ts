@@ -253,30 +253,24 @@ describe("processSharedParam", () => {
   ];
 
   it("returns kind 'none' when param is null", () => {
-    expect(processSharedParam(null, library, false)).toEqual({ kind: "none" });
+    expect(processSharedParam(null, library)).toEqual({ kind: "none" });
   });
 
   it("returns kind 'none' when param is empty string", () => {
-    expect(processSharedParam("", library, false)).toEqual({ kind: "none" });
+    expect(processSharedParam("", library)).toEqual({ kind: "none" });
   });
 
-  it("returns kind 'apply' for a valid param and empty current routine", () => {
+  it("returns kind 'apply' for a valid param", () => {
     const param = encodeRoutineToParam([library[0]]);
-    const result = processSharedParam(param, library, false);
+    const result = processSharedParam(param, library);
     expect(result.kind).toBe("apply");
     if (result.kind !== "apply") return;
     expect(result.routine).toHaveLength(1);
     expect(result.missingCount).toBe(0);
   });
 
-  it("returns kind 'confirm' when current routine is non-empty", () => {
-    const param = encodeRoutineToParam([library[0]]);
-    const result = processSharedParam(param, library, true);
-    expect(result.kind).toBe("confirm");
-  });
-
   it("returns kind 'error' for malformed param", () => {
-    const result = processSharedParam("not-valid", library, false);
+    const result = processSharedParam("not-valid", library);
     expect(result.kind).toBe("error");
     if (result.kind !== "error") return;
     expect(result.message).toBe("Shared link is invalid or corrupted.");
