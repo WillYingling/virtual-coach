@@ -17,6 +17,8 @@ import type { SkillDefinition } from "./models/SkillDefinition";
 import type { RoutineRequirement } from "./models/RoutineRequirements";
 import { useSkillDefinitions, useRoutine } from "./hooks/useSkills";
 import { useSimulator } from "./hooks/useSimulator";
+import { useSharedRoutine } from "./hooks/useSharedRoutine";
+import SharedRoutineDialog from "./components/SharedRoutineDialog";
 
 function App() {
   const {
@@ -28,6 +30,7 @@ function App() {
   } = useSkillDefinitions();
   const {
     routine,
+    setRoutine,
     addToRoutine,
     clearRoutine,
     randomizeRoutine,
@@ -43,6 +46,12 @@ function App() {
     playRoutine,
     closeSimulator,
   } = useSimulator();
+
+  const sharedRoutine = useSharedRoutine({
+    library: skillDefinitions,
+    currentRoutine: routine,
+    setRoutine,
+  });
 
   // Memoize callbacks to prevent unnecessary re-renders
   const handlePlaySkill = useCallback(
@@ -172,6 +181,30 @@ function App() {
             )}
           </Collapse>
 
+          <Collapse in={!!sharedRoutine.warning}>
+            {sharedRoutine.warning && (
+              <Alert
+                severity="warning"
+                onClose={sharedRoutine.dismissWarning}
+                sx={{ mx: { xs: 1, sm: 2, md: 3 }, mb: 2 }}
+              >
+                {sharedRoutine.warning}
+              </Alert>
+            )}
+          </Collapse>
+
+          <Collapse in={!!sharedRoutine.error}>
+            {sharedRoutine.error && (
+              <Alert
+                severity="error"
+                onClose={sharedRoutine.dismissError}
+                sx={{ mx: { xs: 1, sm: 2, md: 3 }, mb: 2 }}
+              >
+                {sharedRoutine.error}
+              </Alert>
+            )}
+          </Collapse>
+
           <Stack
             direction={{ xs: "column", md: "row" }}
             spacing={{ xs: 0.5, sm: 1, md: 2 }} // Reduce spacing for more usable space
@@ -203,6 +236,12 @@ function App() {
           </Stack>
         </Box>
       </Box>
+
+      <SharedRoutineDialog
+        open={sharedRoutine.pendingConfirm !== null}
+        onConfirm={sharedRoutine.acceptShared}
+        onCancel={sharedRoutine.dismissShared}
+      />
 
       <SimulatorModal
         open={simulatorOpen}
