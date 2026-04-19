@@ -3,6 +3,8 @@ import {
   base64UrlDecode,
   encodeRoutineToParam,
   decodeRoutineParam,
+  buildShareUrl,
+  processSharedParam,
 } from "../routineSharing";
 import type { SkillDefinition } from "../../models/SkillDefinition";
 
@@ -204,5 +206,79 @@ describe("decodeRoutineParam", () => {
     expect(loaded.possiblePositions).toEqual(library[0].possiblePositions);
     expect(loaded.isBackSkill).toBe(library[0].isBackSkill);
     expect(loaded.position).toBe("Pike");
+  });
+});
+
+describe("buildShareUrl", () => {
+  const skill: SkillDefinition = {
+    name: "Cody 1 1/2",
+    startingPosition: "Stomach",
+    endingPosition: "Back",
+    flips: 1,
+    twists: [0.5, 1],
+    position: "Tuck",
+  };
+
+  it("composes origin + basePath + ?r= with the encoded param", () => {
+    const url = buildShareUrl([skill], "https://example.test", "/virtual-coach/");
+    expect(url.startsWith("https://example.test/virtual-coach/?r=")).toBe(true);
+    const param = url.slice(url.indexOf("?r=") + 3);
+    // Round-trip via decode to confirm the param is valid.
+    const result = decodeRoutineParam(param, [skill]);
+    if ("error" in result) throw new Error("expected success");
+    expect(result.routine[0].name).toBe("Cody 1 1/2");
+  });
+
+  it("adds a trailing slash to basePath when missing", () => {
+    const url = buildShareUrl([skill], "https://example.test", "/app");
+    expect(url.startsWith("https://example.test/app/?r=")).toBe(true);
+  });
+
+  it("handles basePath of '/'", () => {
+    const url = buildShareUrl([skill], "https://example.test", "/");
+    expect(url.startsWith("https://example.test/?r=")).toBe(true);
+  });
+});
+
+describe("processSharedParam", () => {
+  const library: SkillDefinition[] = [
+    {
+      name: "Cody 1 1/2",
+      startingPosition: "Stomach",
+      endingPosition: "Back",
+      flips: 1,
+      twists: [0.5, 1],
+      position: "Tuck",
+    },
+  ];
+
+  it("returns kind 'none' when param is null", () => {
+    expect(processSharedParam(null, library, false)).toEqual({ kind: "none" });
+  });
+
+  it("returns kind 'none' when param is empty string", () => {
+    expect(processSharedParam("", library, false)).toEqual({ kind: "none" });
+  });
+
+  it("returns kind 'apply' for a valid param and empty current routine", () => {
+    const param = encodeRoutineToParam([library[0]]);
+    const result = processSharedParam(param, library, false);
+    expect(result.kind).toBe("apply");
+    if (result.kind !== "apply") return;
+    expect(result.routine).toHaveLength(1);
+    expect(result.missingCount).toBe(0);
+  });
+
+  it("returns kind 'confirm' when current routine is non-empty", () => {
+    const param = encodeRoutineToParam([library[0]]);
+    const result = processSharedParam(param, library, true);
+    expect(result.kind).toBe("confirm");
+  });
+
+  it("returns kind 'error' for malformed param", () => {
+    const result = processSharedParam("not-valid", library, false);
+    expect(result.kind).toBe("error");
+    if (result.kind !== "error") return;
+    expect(result.message).toBe("Shared link is invalid or corrupted.");
   });
 });
