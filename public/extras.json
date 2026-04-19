@@ -20,6 +20,24 @@
     "isBackSkill": true
   },
   {
+    "name": "Barani Porpoise",
+    "startingPosition": "Back",
+    "endingPosition": "Stomach",
+    "flips": 1,
+    "twists": [0, 0.5],
+    "position": "Tuck",
+    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
+  },
+  {
+    "name": "Barani Ballout to back",
+    "startingPosition": "Back",
+    "endingPosition": "Back",
+    "flips": 1.25,
+    "twists": [0, 0.5],
+    "position": "Tuck",
+    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
+  },
+  {
     "name": "Half-up half-down Porpoise",
     "startingPosition": "Back",
     "endingPosition": "Back",
@@ -38,7 +56,7 @@
     "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
   },
   {
-    "name": "Full Porpoise",
+    "name": "Full-down Porpoise",
     "startingPosition": "Back",
     "endingPosition": "Back",
     "flips": 1,
@@ -47,7 +65,16 @@
     "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
   },
   {
-    "name": "Adolf",
+    "name": "Double Porpoise Full Down",
+    "startingPosition": "Back",
+    "endingPosition": "Back",
+    "flips": 2,
+    "twists": [0, 0, 1],
+    "position": "Tuck",
+    "possiblePositions": ["Tuck", "Pike", "StraightArmsDown"]
+  },
+  {
+    "name": "Adolph",
     "startingPosition": "Standing",
     "endingPosition": "Standing",
     "flips": 1,
