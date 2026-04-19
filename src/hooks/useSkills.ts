@@ -212,6 +212,7 @@ export function useRoutine(skillDefinitions: SkillDefinition[]) {
 
   return {
     routine,
+    setRoutine,
     addToRoutine,
     clearRoutine,
     randomizeRoutine,
