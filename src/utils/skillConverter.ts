@@ -42,6 +42,78 @@ export function totalTwists(definition: SkillDefinition): number {
   }, 0);
 }
 
+/**
+ * Calculate appropriate airtime for a skill based on its complexity
+ */
+export function calculateAirtimeForSkill(definition: SkillDefinition): number {
+  let baseTime = 1.0; // Base airtime for simple skills
+
+  // Add time for flips (more flips = more air time needed)
+  baseTime += definition.flips * 0.3;
+
+  // Add time for twists
+  const totalTwist = totalTwists(definition);
+  baseTime += totalTwist * 0.2;
+
+  // Adjust for position - some positions take longer
+  if (definition.position === Position.Tuck) {
+    baseTime += 0.1;
+  } else if (definition.position === Position.Pike) {
+    baseTime += 0.2;
+  }
+
+  // Adjust for difficult transitions
+  if (definition.startingPosition !== BedPosition.Standing) {
+    baseTime += 0.2;
+  }
+  if (definition.endingPosition !== BedPosition.Standing) {
+    baseTime += 0.2;
+  }
+
+  // Minimum airtime constraints
+  return Math.max(0.8, Math.min(baseTime, 4.0));
+}
+
+/**
+ * Shape a routine's per-skill airtimes into a natural-looking wave by letting
+ * each skill borrow height from its nearest peak in either direction, decayed
+ * by distance. A small skill before a big one gets "thrown higher to prep";
+ * a small skill after a big one rides the follow-through.
+ *
+ * Growth is unbounded because physically there is no cap on throwing a small
+ * skill high. Shrink is capped at `maxShrink` below baseline so a big skill
+ * can never be squished to look small. Under this envelope algorithm the
+ * shrink clamp is a defensive no-op (the envelope is always ≥ baseline), but
+ * we keep it to codify the intended invariant.
+ */
+export function shapeAirtimes(
+  baselines: number[],
+  decay: number = 0.85,
+  maxShrink: number = 0.15,
+): number[] {
+  const n = baselines.length;
+  if (n === 0) return [];
+
+  // Forward pass (right-to-left): anticipate upcoming peaks.
+  const forward: number[] = new Array(n);
+  forward[n - 1] = baselines[n - 1];
+  for (let i = n - 2; i >= 0; i--) {
+    forward[i] = Math.max(baselines[i], forward[i + 1] * decay);
+  }
+
+  // Backward pass (left-to-right): carry follow-through from past peaks.
+  const backward: number[] = new Array(n);
+  backward[0] = baselines[0];
+  for (let i = 1; i < n; i++) {
+    backward[i] = Math.max(baselines[i], backward[i - 1] * decay);
+  }
+
+  return baselines.map((b, i) => {
+    const envelope = Math.max(forward[i], backward[i]);
+    return Math.max(b * (1 - maxShrink), envelope);
+  });
+}
+
 // Default skill definition for calculating rotation multiplier based only on cumulative twist
 const defaultSkill: SkillDefinition = {
   name: "",
@@ -126,6 +198,7 @@ function normalizeTimestamps(timestamps: number[]): number[] {
 function makeNonFlipFrames(
   definition: SkillDefinition,
   incomingTwist: number = 0,
+  airtime?: number,
 ): Skill {
   let frames: AthletePosition[] = [];
   let timestamps: number[] = [];
@@ -165,6 +238,7 @@ function makeNonFlipFrames(
   return {
     positions: frames,
     timestamps: timestamps,
+    airtime: airtime || calculateAirtimeForSkill(definition),
   };
 }
 
@@ -172,11 +246,12 @@ export function makeSkillFrames(
   definition: SkillDefinition,
   incomingTwist: number = 0,
   renderProps?: RenderProperties,
+  airtime?: number,
   debug: boolean = false,
 ): Skill {
   const debugLog = debug ? console.log : () => {};
   if (flipNumber(definition) === 0) {
-    return makeNonFlipFrames(definition, incomingTwist);
+    return makeNonFlipFrames(definition, incomingTwist, airtime);
   }
 
   debugLog("Making skill frames for:", definition);
@@ -348,6 +423,7 @@ export function makeSkillFrames(
   let skill: Skill = {
     positions: frames,
     timestamps: normalizeTimestamps(timestamps),
+    airtime: airtime || calculateAirtimeForSkill(definition),
   };
   debugLog("Final skill frames:", frames);
   return skill;

@@ -73,10 +73,12 @@ export default function SimulatorModal({
         const newSkills: Skill[] = [];
 
         for (const definition of skillDefinitions) {
+          // For routines (multiple skills), use default properties; for individual skills, use custom properties
           const skill = makeSkillFrames(
             definition,
             cumulativeTwist,
-            renderProperties,
+            skillDefinitions.length === 1 ? renderProperties : undefined,
+            jumpPhaseLength,
           );
           newSkills.push(skill);
 
@@ -91,13 +93,14 @@ export default function SimulatorModal({
       }
       return [];
     },
-    [skillDefinitions],
+    [skillDefinitions, jumpPhaseLength],
   );
 
   // Regenerated skills based on render properties
   const [skills, setSkills] = useState<Skill[]>(() => {
     // Initialize skills with proper render properties if skill definitions are available
-    if (skillDefinitions.length > 0) {
+    // For single skills only - routines should use initialSkills which include prep jumps
+    if (skillDefinitions.length === 1) {
       const initialProps = getRenderPropertiesForSkill(skillDefinitions[0]);
       return generateSkillsFromDefinitions(initialProps);
     }
@@ -112,7 +115,8 @@ export default function SimulatorModal({
   if (skillDefinitions !== lastSkillDefinitions) {
     setLastSkillDefinitions(skillDefinitions);
 
-    if (skillDefinitions.length > 0) {
+    // Only regenerate skills for individual skills (single skill), not routines
+    if (skillDefinitions.length === 1) {
       const newRenderProps = getRenderPropertiesForSkill(skillDefinitions[0]);
       const newSkills = generateSkillsFromDefinitions(newRenderProps);
 
@@ -121,17 +125,21 @@ export default function SimulatorModal({
       setSkills(newSkills);
       setRestartKey((prev) => prev + 1); // Restart animation
     } else {
+      // Use initial skills for routines (preserves prep jumps from useSimulator)
       setSkills(initialSkills);
     }
   }
 
   const regenerateSkills = useCallback(
     (newRenderProps: RenderProperties) => {
-      const newSkills = generateSkillsFromDefinitions(newRenderProps);
-      setSkills(newSkills);
-      setRestartKey((prev) => prev + 1); // Restart the animation with new skills
+      // Only regenerate for individual skills, not routines (to preserve prep jumps)
+      if (skillDefinitions.length === 1) {
+        const newSkills = generateSkillsFromDefinitions(newRenderProps);
+        setSkills(newSkills);
+        setRestartKey((prev) => prev + 1); // Restart the animation with new skills
+      }
     },
-    [generateSkillsFromDefinitions],
+    [generateSkillsFromDefinitions, skillDefinitions.length],
   );
 
   const theme = useTheme();
@@ -280,8 +288,8 @@ export default function SimulatorModal({
             </Box>
           </Stack>
 
-          {/* Advanced Controls */}
-          {skillDefinitions.length > 0 && (
+          {/* Advanced Controls - Only show for individual skills, not routines */}
+          {skillDefinitions.length === 1 && (
             <Accordion
               expanded={advancedExpanded}
               onChange={(_, isExpanded) => setAdvancedExpanded(isExpanded)}
@@ -410,6 +418,7 @@ export default function SimulatorModal({
             restartKey={restartKey}
             onCurrentSkillChange={handleCurrentSkillChange}
             fpvEnabled={fpvEnabled}
+            isRoutine={skillDefinitions.length > 1}
           />
         </Box>
       </DialogContent>

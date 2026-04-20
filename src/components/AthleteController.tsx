@@ -9,6 +9,7 @@ import * as THREE from "three";
 export interface Skill {
   positions: AthletePosition[];
   timestamps: number[]; // Normalized timestamps (will be multiplied by JumpPhase)
+  airtime: number; // Total time in the air for this skill (used for timing routines)
 }
 
 // Component that calculates athlete position each frame
@@ -19,6 +20,7 @@ interface AthleteControllerProps {
   restartKey?: number;
   onCurrentSkillChange?: (skillIndex: number, skillName?: string) => void;
   fpvEnabled?: boolean;
+  isRoutine?: boolean;
 }
 
 function AthleteController({
@@ -28,6 +30,7 @@ function AthleteController({
   restartKey = 0,
   onCurrentSkillChange,
   fpvEnabled = false,
+  isRoutine = false,
 }: AthleteControllerProps) {
   const athleteRef = useRef<THREE.Group>(null);
   const athletePositionRef = useRef<AthletePosition>({
@@ -52,8 +55,12 @@ function AthleteController({
 
   const JumpPhase = jumpPhaseLength;
   const BouncePhase = 0.3;
-  const SkillCycleTime = JumpPhase + BouncePhase;
-  const TotalCycleTime = SkillCycleTime * skills.length;
+
+  // Calculate skill cycle times based on individual airtimes
+  const skillCycleTimes = skills.map(
+    (skill) => (skill.airtime || 2.0) + BouncePhase,
+  );
+  const TotalCycleTime = skillCycleTimes.reduce((sum, time) => sum + time, 0);
   const Gravity = -9.81; // m/s^2
 
   useFrame((state) => {
@@ -76,11 +83,25 @@ function AthleteController({
       firstFrameRef.current = false;
     }
 
-    const totalElapsedTime = state.clock.elapsedTime % TotalCycleTime;
+    // Apply looping only for individual skills, not routines
+    const totalElapsedTime = isRoutine
+      ? Math.min(state.clock.elapsedTime, TotalCycleTime)
+      : state.clock.elapsedTime % TotalCycleTime;
 
-    // Determine which skill we're currently on
-    const currentSkillIndex = Math.floor(totalElapsedTime / SkillCycleTime);
-    const cycleTime = totalElapsedTime % SkillCycleTime;
+    // Determine which skill we're currently on based on cumulative skill times
+    let currentSkillIndex = 0;
+    let cumulativeTime = 0;
+    for (let i = 0; i < skillCycleTimes.length; i++) {
+      if (totalElapsedTime < cumulativeTime + skillCycleTimes[i]) {
+        currentSkillIndex = i;
+        break;
+      }
+      cumulativeTime += skillCycleTimes[i];
+      currentSkillIndex = i; // In case we're at the end
+    }
+
+    const cycleTime = totalElapsedTime - cumulativeTime;
+    const currentSkillAirtime = skills[currentSkillIndex]?.airtime || 2.0;
 
     // Update cumulative twist when transitioning to a new skill
     if (
@@ -135,10 +156,10 @@ function AthleteController({
     let curTime = cycleTime;
     let height = 0;
 
-    if (curTime > JumpPhase) {
-      curTime -= JumpPhase;
+    if (curTime > currentSkillAirtime) {
+      curTime -= currentSkillAirtime;
       // Bounce phase
-      let landingVelocity = Gravity * JumpPhase * 0.5;
+      let landingVelocity = Gravity * currentSkillAirtime * 0.5;
       let finalVelocity = -landingVelocity;
       let bounceAcceleration = (finalVelocity - landingVelocity) / BouncePhase;
       height =
@@ -147,7 +168,7 @@ function AthleteController({
     } else {
       height =
         0.5 * Gravity * (curTime * curTime) -
-        ((Gravity * JumpPhase) / 2) * curTime;
+        ((Gravity * currentSkillAirtime) / 2) * curTime;
     }
 
     // Interpolate between positions based on timestamps
@@ -156,8 +177,8 @@ function AthleteController({
       let idx = 0;
       for (let i = 0; i < timestamps.length - 1; i++) {
         if (
-          time >= timestamps[i] * JumpPhase &&
-          time <= timestamps[i + 1] * JumpPhase
+          time >= timestamps[i] * currentSkillAirtime &&
+          time <= timestamps[i + 1] * currentSkillAirtime
         ) {
           idx = i;
           break;
@@ -165,16 +186,16 @@ function AthleteController({
       }
 
       // Handle edge cases
-      if (time <= timestamps[0] * JumpPhase) {
+      if (time <= timestamps[0] * currentSkillAirtime) {
         return { ...positions[0] };
       }
-      if (time >= timestamps[timestamps.length - 1] * JumpPhase) {
+      if (time >= timestamps[timestamps.length - 1] * currentSkillAirtime) {
         return { ...positions[positions.length - 1] };
       }
 
       // Linear interpolation between keyframes
-      const t1 = timestamps[idx] * JumpPhase;
-      const t2 = timestamps[idx + 1] * JumpPhase;
+      const t1 = timestamps[idx] * currentSkillAirtime;
+      const t2 = timestamps[idx + 1] * currentSkillAirtime;
       const factor = (time - t1) / (t2 - t1);
 
       const currentPosition = positions[idx];

@@ -70,6 +70,7 @@ interface SimulatorProps {
   restartKey?: number;
   onCurrentSkillChange?: (skillIndex: number, skillName?: string) => void;
   fpvEnabled?: boolean;
+  isRoutine?: boolean;
 }
 
 function Simulator({
@@ -79,6 +80,7 @@ function Simulator({
   restartKey = 0,
   onCurrentSkillChange,
   fpvEnabled = false,
+  isRoutine = false,
 }: SimulatorProps) {
   // Rotate camera position 45 degrees around Z axis
   const angle = Math.PI / 4; // 45 degrees
@@ -146,6 +148,7 @@ function Simulator({
         restartKey={restartKey}
         onCurrentSkillChange={onCurrentSkillChange}
         fpvEnabled={fpvEnabled}
+        isRoutine={isRoutine}
       />
       {/* Frame marker at origin for debugging */}
       {/* <FrameMarker position={[0, 0, 0]} size={2} /> */}
