@@ -404,7 +404,7 @@
   {
     "name": "Double Pullover",
     "startingPosition": "Back",
-    "endingPosition": "Stomach",
+    "endingPosition": "Standing",
     "flips": 1.75,
     "twists": [0, 0, 0],
     "position": "StraightArmsDown",
