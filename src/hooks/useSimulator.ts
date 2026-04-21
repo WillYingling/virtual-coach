@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Skill } from "../components/AthleteController";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import { Position } from "../models/SkillDefinition";
+import { positions } from "../components/Simulator";
 import {
   totalTwists,
   makeSkillFrames,
@@ -9,41 +10,19 @@ import {
   shapeAirtimes,
 } from "../utils/skillConverter";
 
-const PREP_JUMP_COUNT = 3;
-const AIRTIME_DECAY = 0.85;
+// Fractions of the first skill's airtime for each prep jump, in order. The
+// last entry is 1.0 so the athlete is already at full height entering skill 1.
+const PREP_JUMP_FRACTIONS = [0.25, 0.5, 1.0];
 
-/**
- * Create prep jumps that ramp up to the first skill's airtime using the same
- * decay factor that shapes the routine envelope, so the transition from the
- * last prep into skill 0 has no visual discontinuity.
- */
 function createPrepJumps(firstSkillAirtime: number): Skill[] {
-  const prepJumps: Skill[] = [];
-
-  const standingJoints = {
-    leftShoulder: Math.PI,
-    rightShoulder: Math.PI,
-    leftThigh: 0,
-    rightThigh: 0,
-    leftShin: 0,
-    rightShin: 0,
-  };
-
-  for (let k = 1; k <= PREP_JUMP_COUNT; k++) {
-    const prepAirtime =
-      firstSkillAirtime * Math.pow(AIRTIME_DECAY, PREP_JUMP_COUNT - k + 1);
-
-    prepJumps.push({
-      positions: [
-        { height: 0, rotation: 0, twist: 0, joints: standingJoints },
-        { height: 0, rotation: 0, twist: 0, joints: standingJoints },
-      ],
-      timestamps: [0, 1],
-      airtime: prepAirtime,
-    });
-  }
-
-  return prepJumps;
+  return PREP_JUMP_FRACTIONS.map((fraction) => ({
+    positions: [
+      { height: 0, rotation: 0, twist: 0, joints: positions.StraightArmsUp },
+      { height: 0, rotation: 0, twist: 0, joints: positions.StraightArmsUp },
+    ],
+    timestamps: [0, 1],
+    airtime: firstSkillAirtime * fraction,
+  }));
 }
 
 /**
@@ -77,7 +56,7 @@ export function useSimulator() {
   const playRoutine = (routine: SkillDefinition[]) => {
     if (routine.length > 0) {
       const baselines = routine.map((def) => calculateAirtimeForSkill(def));
-      const shapedAirtimes = shapeAirtimes(baselines, AIRTIME_DECAY);
+      const shapedAirtimes = shapeAirtimes(baselines);
 
       let cumulativeTwist = 0;
       const animatedSkills = routine.map((def, i) => {
@@ -101,19 +80,12 @@ export function useSimulator() {
         return skill;
       });
 
-      if (routine.length > 1) {
-        const prepJumps = createPrepJumps(shapedAirtimes[0]);
-        const allSkills = [...prepJumps, ...animatedSkills];
-        const prepNames = prepJumps.map((_, i) => `Prep Jump ${i + 1}`);
-        const allNames = [...prepNames, ...routine.map((def) => def.name)];
+      const prepJumps =
+        routine.length > 1 ? createPrepJumps(shapedAirtimes[0]) : [];
+      const prepNames = prepJumps.map((_, i) => `Prep Jump ${i + 1}`);
 
-        setSkills(allSkills);
-        setSkillNames(allNames);
-      } else {
-        setSkills(animatedSkills);
-        setSkillNames(routine.map((def) => def.name));
-      }
-
+      setSkills([...prepJumps, ...animatedSkills]);
+      setSkillNames([...prepNames, ...routine.map((def) => def.name)]);
       setSkillDefinitions(routine);
       setSimulatorOpen(true);
     }

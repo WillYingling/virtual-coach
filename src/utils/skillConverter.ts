@@ -14,9 +14,8 @@ import {
 
 export interface RenderProperties {
   stallRotation: number; // rotation during stall
-
   kickoutRotation: number; // rotation during kickout phase
-  positionTransitionDuration: number; // duration of transition into position phase
+  positionTransitionRotation: number; // fraction of a flip spent transitioning into/out of position
 }
 
 const relativePositionSpeeds = {
@@ -41,6 +40,12 @@ export function totalTwists(definition: SkillDefinition): number {
     return sum + validTwist;
   }, 0);
 }
+
+// Shared airtime bounds. Also used as the "Air Time" slider range in
+// SimulatorModal so single-skill overrides can't exceed what a routine could
+// physically produce.
+export const MIN_AIRTIME = 0.8;
+export const MAX_AIRTIME = 2.2;
 
 /**
  * Calculate appropriate airtime for a skill based on its complexity
@@ -70,48 +75,22 @@ export function calculateAirtimeForSkill(definition: SkillDefinition): number {
     baseTime += 0.2;
   }
 
-  // Minimum airtime constraints
-  return Math.max(0.8, Math.min(baseTime, 4.0));
+  return Math.max(MIN_AIRTIME, Math.min(baseTime, MAX_AIRTIME));
 }
 
 /**
- * Shape a routine's per-skill airtimes into a natural-looking wave by letting
- * each skill borrow height from its nearest peak in either direction, decayed
- * by distance. A small skill before a big one gets "thrown higher to prep";
- * a small skill after a big one rides the follow-through.
- *
- * Growth is unbounded because physically there is no cap on throwing a small
- * skill high. Shrink is capped at `maxShrink` below baseline so a big skill
- * can never be squished to look small. Under this envelope algorithm the
- * shrink clamp is a defensive no-op (the envelope is always ≥ baseline), but
- * we keep it to codify the intended invariant.
+ * Lift every skill's airtime so no skill appears much lower than the
+ * routine's peak. The floor is `(1 - maxDropFraction)` of the max baseline;
+ * any skill below the floor is raised to it, anything at/above stays put.
  */
 export function shapeAirtimes(
   baselines: number[],
-  decay: number = 0.85,
-  maxShrink: number = 0.15,
+  maxDropFraction: number = 0.15,
 ): number[] {
-  const n = baselines.length;
-  if (n === 0) return [];
-
-  // Forward pass (right-to-left): anticipate upcoming peaks.
-  const forward: number[] = new Array(n);
-  forward[n - 1] = baselines[n - 1];
-  for (let i = n - 2; i >= 0; i--) {
-    forward[i] = Math.max(baselines[i], forward[i + 1] * decay);
-  }
-
-  // Backward pass (left-to-right): carry follow-through from past peaks.
-  const backward: number[] = new Array(n);
-  backward[0] = baselines[0];
-  for (let i = 1; i < n; i++) {
-    backward[i] = Math.max(baselines[i], backward[i - 1] * decay);
-  }
-
-  return baselines.map((b, i) => {
-    const envelope = Math.max(forward[i], backward[i]);
-    return Math.max(b * (1 - maxShrink), envelope);
-  });
+  if (baselines.length === 0) return [];
+  const peak = Math.max(...baselines);
+  const floor = peak * (1 - maxDropFraction);
+  return baselines.map((b) => Math.max(b, floor));
 }
 
 // Default skill definition for calculating rotation multiplier based only on cumulative twist
@@ -178,7 +157,7 @@ export function getRenderPropertiesForSkill(
   return {
     stallRotation,
     kickoutRotation,
-    positionTransitionDuration: 0.15,
+    positionTransitionRotation: 1 / 6,
   };
 }
 
@@ -238,7 +217,7 @@ function makeNonFlipFrames(
   return {
     positions: frames,
     timestamps: timestamps,
-    airtime: airtime || calculateAirtimeForSkill(definition),
+    airtime: airtime ?? calculateAirtimeForSkill(definition),
   };
 }
 
@@ -314,7 +293,7 @@ export function makeSkillFrames(
   );
   let previousPosition = "StraightArmsDown";
 
-  const transitionRotation = 1 / 6.0;
+  const transitionRotation = renderProps.positionTransitionRotation;
 
   let finalRotation = definition.flips + initialRotation * rotationMultiplier;
   let isLastFlip = false;
@@ -423,7 +402,7 @@ export function makeSkillFrames(
   let skill: Skill = {
     positions: frames,
     timestamps: normalizeTimestamps(timestamps),
-    airtime: airtime || calculateAirtimeForSkill(definition),
+    airtime: airtime ?? calculateAirtimeForSkill(definition),
   };
   debugLog("Final skill frames:", frames);
   return skill;

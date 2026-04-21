@@ -1,22 +1,25 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import Athlete from "./Athlete";
 import type { AthletePosition } from "./Athlete";
 import Trampoline from "./Trampoline";
 import * as THREE from "three";
 
-// A skill is an array of AthletePositions that start and end at height 0
+// A skill is an array of AthletePositions that start and end at height 0.
+// `timestamps` are normalized to [0,1] and scaled by `airtime` at runtime.
 export interface Skill {
   positions: AthletePosition[];
-  timestamps: number[]; // Normalized timestamps (will be multiplied by JumpPhase)
-  airtime: number; // Total time in the air for this skill (used for timing routines)
+  timestamps: number[];
+  airtime: number;
 }
 
-// Component that calculates athlete position each frame
 interface AthleteControllerProps {
   skills: Skill[];
   skillNames?: string[];
-  jumpPhaseLength?: number;
+  // Live airtime override. When set, replaces each skill's baked-in airtime —
+  // used in single-skill mode so the "Air Time" slider drives hang time
+  // without regenerating frames on every drag.
+  airtimeOverride?: number;
   restartKey?: number;
   onCurrentSkillChange?: (skillIndex: number, skillName?: string) => void;
   fpvEnabled?: boolean;
@@ -26,7 +29,7 @@ interface AthleteControllerProps {
 function AthleteController({
   skills,
   skillNames = [],
-  jumpPhaseLength = 2,
+  airtimeOverride,
   restartKey = 0,
   onCurrentSkillChange,
   fpvEnabled = false,
@@ -47,29 +50,32 @@ function AthleteController({
     },
   });
 
-  // Track cumulative twist across skills
   const cumulativeTwistRef = useRef<number>(0);
   const previousSkillIndexRef = useRef<number>(0);
   const lastRestartKeyRef = useRef<number>(restartKey);
   const firstFrameRef = useRef<boolean>(true);
 
-  const JumpPhase = jumpPhaseLength;
   const BouncePhase = 0.3;
-
-  // Calculate skill cycle times based on individual airtimes
-  const skillCycleTimes = skills.map(
-    (skill) => (skill.airtime || 2.0) + BouncePhase,
-  );
-  const TotalCycleTime = skillCycleTimes.reduce((sum, time) => sum + time, 0);
   const Gravity = -9.81; // m/s^2
+
+  // Precompute per-skill cycle times and a prefix-sum of cycle ends so the
+  // per-frame "which skill are we on?" lookup doesn't re-map/re-reduce.
+  const { cumulativeEnds, TotalCycleTime } = useMemo(() => {
+    const ends: number[] = new Array(skills.length);
+    let acc = 0;
+    for (let i = 0; i < skills.length; i++) {
+      const airtime = airtimeOverride ?? skills[i].airtime;
+      acc += airtime + BouncePhase;
+      ends[i] = acc;
+    }
+    return { cumulativeEnds: ends, TotalCycleTime: acc };
+  }, [skills, airtimeOverride]);
 
   useFrame((state) => {
     if (skills.length === 0) {
-      // No skills to animate, keep athlete in default position
       return;
     }
 
-    // Handle restart
     if (restartKey !== lastRestartKeyRef.current) {
       state.clock.elapsedTime = 0;
       cumulativeTwistRef.current = 0;
@@ -83,25 +89,24 @@ function AthleteController({
       firstFrameRef.current = false;
     }
 
-    // Apply looping only for individual skills, not routines
+    // Routines play once and hold on the final frame; single skills loop.
     const totalElapsedTime = isRoutine
       ? Math.min(state.clock.elapsedTime, TotalCycleTime)
       : state.clock.elapsedTime % TotalCycleTime;
 
-    // Determine which skill we're currently on based on cumulative skill times
-    let currentSkillIndex = 0;
-    let cumulativeTime = 0;
-    for (let i = 0; i < skillCycleTimes.length; i++) {
-      if (totalElapsedTime < cumulativeTime + skillCycleTimes[i]) {
+    let currentSkillIndex = cumulativeEnds.length - 1;
+    for (let i = 0; i < cumulativeEnds.length; i++) {
+      if (totalElapsedTime < cumulativeEnds[i]) {
         currentSkillIndex = i;
         break;
       }
-      cumulativeTime += skillCycleTimes[i];
-      currentSkillIndex = i; // In case we're at the end
     }
 
-    const cycleTime = totalElapsedTime - cumulativeTime;
-    const currentSkillAirtime = skills[currentSkillIndex]?.airtime || 2.0;
+    const skillStart =
+      currentSkillIndex === 0 ? 0 : cumulativeEnds[currentSkillIndex - 1];
+    const cycleTime = totalElapsedTime - skillStart;
+    const currentSkillAirtime =
+      airtimeOverride ?? skills[currentSkillIndex].airtime;
 
     // Update cumulative twist when transitioning to a new skill
     if (
@@ -171,32 +176,30 @@ function AthleteController({
         ((Gravity * currentSkillAirtime) / 2) * curTime;
     }
 
-    // Interpolate between positions based on timestamps
+    // Interpolate between positions based on timestamps. `timestamps` are
+    // normalized [0,1]; normalize `time` into that space once instead of
+    // scaling every timestamp on every lookup.
     const interpolatePosition = (time: number): AthletePosition => {
-      // Find the two keyframes to interpolate between
+      const tNorm = time / currentSkillAirtime;
+
       let idx = 0;
       for (let i = 0; i < timestamps.length - 1; i++) {
-        if (
-          time >= timestamps[i] * currentSkillAirtime &&
-          time <= timestamps[i + 1] * currentSkillAirtime
-        ) {
+        if (tNorm >= timestamps[i] && tNorm <= timestamps[i + 1]) {
           idx = i;
           break;
         }
       }
 
-      // Handle edge cases
-      if (time <= timestamps[0] * currentSkillAirtime) {
+      if (tNorm <= timestamps[0]) {
         return { ...positions[0] };
       }
-      if (time >= timestamps[timestamps.length - 1] * currentSkillAirtime) {
+      if (tNorm >= timestamps[timestamps.length - 1]) {
         return { ...positions[positions.length - 1] };
       }
 
-      // Linear interpolation between keyframes
-      const t1 = timestamps[idx] * currentSkillAirtime;
-      const t2 = timestamps[idx + 1] * currentSkillAirtime;
-      const factor = (time - t1) / (t2 - t1);
+      const t1 = timestamps[idx];
+      const t2 = timestamps[idx + 1];
+      const factor = (tNorm - t1) / (t2 - t1);
 
       const currentPosition = positions[idx];
       const nextPosition = positions[idx + 1];
@@ -264,8 +267,7 @@ function AthleteController({
       };
     };
 
-    // Get interpolated position for current time (only during jump phase)
-    if (originalTime <= JumpPhase) {
+    if (originalTime <= currentSkillAirtime) {
       const interpolatedPos = interpolatePosition(originalTime);
 
       // Root is now at hip level, so add totalLegLength to height

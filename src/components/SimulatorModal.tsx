@@ -24,6 +24,8 @@ import type { RenderProperties } from "../utils/skillConverter";
 import {
   makeSkillFrames,
   getRenderPropertiesForSkill,
+  MIN_AIRTIME,
+  MAX_AIRTIME,
 } from "../utils/skillConverter";
 import type { SkillDefinition } from "../models/SkillDefinition";
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
@@ -43,6 +45,9 @@ export default function SimulatorModal({
   skillNames = [],
   onClose,
 }: SimulatorModalProps) {
+  const isSingleSkill = skillDefinitions.length === 1;
+  const isRoutine = skillDefinitions.length > 1;
+
   const [jumpPhaseLength, setJumpPhaseLength] = useState(2);
   const [restartKey, setRestartKey] = useState(0);
   const [currentSkillIndex, setCurrentSkillIndex] = useState(0);
@@ -53,7 +58,6 @@ export default function SimulatorModal({
   const [fpvEnabled, setFpvEnabled] = useState(false);
   const [advancedExpanded, setAdvancedExpanded] = useState(false);
 
-  // Advanced render properties - initialized with lazy computation
   const [renderProps, setRenderProps] = useState<RenderProperties>(() => {
     if (skillDefinitions.length > 0) {
       return getRenderPropertiesForSkill(skillDefinitions[0]);
@@ -61,11 +65,10 @@ export default function SimulatorModal({
     return {
       stallRotation: 0.125,
       kickoutRotation: 0.5,
-      positionTransitionDuration: 0.15,
+      positionTransitionRotation: 1 / 6,
     };
   });
 
-  // Helper function to generate skills from definitions
   const generateSkillsFromDefinitions = useCallback(
     (renderProperties: RenderProperties) => {
       if (skillDefinitions.length > 0) {
@@ -73,16 +76,14 @@ export default function SimulatorModal({
         const newSkills: Skill[] = [];
 
         for (const definition of skillDefinitions) {
-          // For routines (multiple skills), use default properties; for individual skills, use custom properties
           const skill = makeSkillFrames(
             definition,
             cumulativeTwist,
-            skillDefinitions.length === 1 ? renderProperties : undefined,
+            isSingleSkill ? renderProperties : undefined,
             jumpPhaseLength,
           );
           newSkills.push(skill);
 
-          // Update cumulative twist for next skill
           if (skill.positions && skill.positions.length > 0) {
             cumulativeTwist +=
               skill.positions[skill.positions.length - 1].twist;
@@ -93,53 +94,46 @@ export default function SimulatorModal({
       }
       return [];
     },
-    [skillDefinitions, jumpPhaseLength],
+    [skillDefinitions, jumpPhaseLength, isSingleSkill],
   );
 
-  // Regenerated skills based on render properties
+  // Routines ship with prep jumps baked into initialSkills by useSimulator;
+  // only single-skill mode regenerates from definitions using the sliders.
   const [skills, setSkills] = useState<Skill[]>(() => {
-    // Initialize skills with proper render properties if skill definitions are available
-    // For single skills only - routines should use initialSkills which include prep jumps
-    if (skillDefinitions.length === 1) {
+    if (isSingleSkill) {
       const initialProps = getRenderPropertiesForSkill(skillDefinitions[0]);
       return generateSkillsFromDefinitions(initialProps);
     }
     return initialSkills;
   });
 
-  // Track if we need to update render props for new skill definitions
   const [lastSkillDefinitions, setLastSkillDefinitions] =
     useState(skillDefinitions);
 
-  // Check if skill definitions have changed and update accordingly
   if (skillDefinitions !== lastSkillDefinitions) {
     setLastSkillDefinitions(skillDefinitions);
 
-    // Only regenerate skills for individual skills (single skill), not routines
-    if (skillDefinitions.length === 1) {
+    if (isSingleSkill) {
       const newRenderProps = getRenderPropertiesForSkill(skillDefinitions[0]);
       const newSkills = generateSkillsFromDefinitions(newRenderProps);
 
-      // Update both render props and skills
       setRenderProps(newRenderProps);
       setSkills(newSkills);
-      setRestartKey((prev) => prev + 1); // Restart animation
+      setRestartKey((prev) => prev + 1);
     } else {
-      // Use initial skills for routines (preserves prep jumps from useSimulator)
       setSkills(initialSkills);
     }
   }
 
   const regenerateSkills = useCallback(
     (newRenderProps: RenderProperties) => {
-      // Only regenerate for individual skills, not routines (to preserve prep jumps)
-      if (skillDefinitions.length === 1) {
+      if (isSingleSkill) {
         const newSkills = generateSkillsFromDefinitions(newRenderProps);
         setSkills(newSkills);
-        setRestartKey((prev) => prev + 1); // Restart the animation with new skills
+        setRestartKey((prev) => prev + 1);
       }
     },
-    [generateSkillsFromDefinitions, skillDefinitions.length],
+    [generateSkillsFromDefinitions, isSingleSkill],
   );
 
   const theme = useTheme();
@@ -257,23 +251,25 @@ export default function SimulatorModal({
               </Typography>
             </Box>
 
-            <Box sx={{ minWidth: isMobile ? "auto" : 200 }}>
-              <Typography variant="body2" gutterBottom>
-                Air Time
-              </Typography>
-              <Slider
-                value={jumpPhaseLength}
-                onChange={handleJumpPhaseLengthChange}
-                min={0.75}
-                max={3.2}
-                step={0.1}
-                size="small"
-                sx={{
-                  width: isMobile ? "100%" : 180,
-                  maxWidth: isMobile ? "300px" : "180px",
-                }}
-              />
-            </Box>
+            {isSingleSkill && (
+              <Box sx={{ minWidth: isMobile ? "auto" : 200 }}>
+                <Typography variant="body2" gutterBottom>
+                  Air Time
+                </Typography>
+                <Slider
+                  value={jumpPhaseLength}
+                  onChange={handleJumpPhaseLengthChange}
+                  min={MIN_AIRTIME}
+                  max={MAX_AIRTIME}
+                  step={0.1}
+                  size="small"
+                  sx={{
+                    width: isMobile ? "100%" : 180,
+                    maxWidth: isMobile ? "300px" : "180px",
+                  }}
+                />
+              </Box>
+            )}
             <Box>
               <FormControlLabel
                 control={
@@ -288,8 +284,7 @@ export default function SimulatorModal({
             </Box>
           </Stack>
 
-          {/* Advanced Controls - Only show for individual skills, not routines */}
-          {skillDefinitions.length === 1 && (
+          {isSingleSkill && (
             <Accordion
               expanded={advancedExpanded}
               onChange={(_, isExpanded) => setAdvancedExpanded(isExpanded)}
@@ -370,8 +365,8 @@ export default function SimulatorModal({
 
                   <Box>
                     <Typography variant="body2" gutterBottom>
-                      Position Transition Duration (
-                      {renderProps.positionTransitionDuration.toFixed(3)})
+                      Position Transition Rotation (
+                      {renderProps.positionTransitionRotation.toFixed(3)})
                     </Typography>
                     <Typography
                       variant="caption"
@@ -379,23 +374,24 @@ export default function SimulatorModal({
                       display="block"
                       gutterBottom
                     >
-                      Duration of transition into and out of the skill position
+                      Fraction of a flip spent transitioning into and out of
+                      the skill position
                     </Typography>
                     <Slider
-                      value={renderProps.positionTransitionDuration}
+                      value={renderProps.positionTransitionRotation}
                       onChange={(_, value) =>
                         handleRenderPropChange(
-                          "positionTransitionDuration",
+                          "positionTransitionRotation",
                           value as number,
                         )
                       }
                       onChangeCommitted={(_, value) =>
                         handleRenderPropChangeCommitted(
-                          "positionTransitionDuration",
+                          "positionTransitionRotation",
                           value as number,
                         )
                       }
-                      min={0.05}
+                      min={0.1}
                       max={0.4}
                       step={0.01}
                       size="small"
@@ -414,11 +410,11 @@ export default function SimulatorModal({
             key={modalKey}
             skills={skills}
             skillNames={skillNames}
-            jumpPhaseLength={jumpPhaseLength}
+            airtimeOverride={isSingleSkill ? jumpPhaseLength : undefined}
             restartKey={restartKey}
             onCurrentSkillChange={handleCurrentSkillChange}
             fpvEnabled={fpvEnabled}
-            isRoutine={skillDefinitions.length > 1}
+            isRoutine={isRoutine}
           />
         </Box>
       </DialogContent>

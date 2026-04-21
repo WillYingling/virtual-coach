@@ -296,42 +296,35 @@ describe("shapeAirtimes", () => {
     expect(shapeAirtimes([1.5])).toEqual([1.5]);
   });
 
-  it("never lowers the routine's peak", () => {
-    const shaped = shapeAirtimes([1.0, 1.5, 1.9], 0.85, 0.15);
+  it("leaves the peak untouched", () => {
+    const shaped = shapeAirtimes([1.0, 1.5, 1.9]);
     expect(shaped[2]).toBeCloseTo(1.9, 6);
   });
 
-  it("lifts a small skill toward an upcoming peak with no upper cap", () => {
-    // Peak 1.9 two positions away decays to 1.9 * 0.85^2 = 1.3735;
-    // peak 1.5 one position away decays to 1.275. Skill 0 takes the larger.
-    const [a0, a1, a2] = shapeAirtimes([1.0, 1.5, 1.9], 0.85, 0.15);
-    expect(a0).toBeCloseTo(1.9 * 0.85 * 0.85, 6);
-    expect(a1).toBeCloseTo(1.9 * 0.85, 6);
-    expect(a2).toBeCloseTo(1.9, 6);
+  it("lifts any skill below 85% of the peak up to the floor", () => {
+    // Peak 2.0, floor = 2.0 * 0.85 = 1.7. 1.0 and 1.5 both lift to 1.7;
+    // 1.8 and 2.0 stay at baseline.
+    const shaped = shapeAirtimes([1.0, 1.5, 1.8, 2.0]);
+    expect(shaped[0]).toBeCloseTo(1.7, 6);
+    expect(shaped[1]).toBeCloseTo(1.7, 6);
+    expect(shaped[2]).toBeCloseTo(1.8, 6);
+    expect(shaped[3]).toBeCloseTo(2.0, 6);
   });
 
-  it("lifts a small skill AFTER a peak via follow-through (backward pass)", () => {
-    // This is the back-tuck / double-back / tuck-jump case the user flagged:
-    // tuck jump rides the momentum of the preceding double back.
-    const [a0, a1, a2] = shapeAirtimes([1.4, 1.7, 1.1], 0.85, 0.15);
-    expect(a0).toBeCloseTo(1.7 * 0.85, 6); // forward lift toward 1.7
-    expect(a1).toBeCloseTo(1.7, 6);
-    expect(a2).toBeCloseTo(1.7 * 0.85, 6); // backward follow-through from 1.7
+  it("honors a custom maxDropFraction", () => {
+    // Peak 2.0, maxDropFraction 0.25 → floor = 1.5. 1.0 lifts to 1.5,
+    // 1.6 stays.
+    const shaped = shapeAirtimes([1.0, 1.6, 2.0], 0.25);
+    expect(shaped[0]).toBeCloseTo(1.5, 6);
+    expect(shaped[1]).toBeCloseTo(1.6, 6);
+    expect(shaped[2]).toBeCloseTo(2.0, 6);
   });
 
-  it("allows arbitrarily large lifts for a tiny skill next to a huge one", () => {
-    // No upper cap: a ~10× peak can lift a neighbor well above its baseline.
-    const [a0, a1] = shapeAirtimes([1.0, 10.0], 0.85, 0.15);
-    expect(a0).toBeCloseTo(8.5, 6);
-    expect(a1).toBeCloseTo(10.0, 6);
-  });
-
-  it("respects the shrink floor (defensive; envelope never shrinks today)", () => {
-    // All outputs must be ≥ (1 - maxShrink) × baseline.
+  it("never lowers any skill below its baseline", () => {
     const baselines = [1.0, 1.5, 1.9, 0.8, 2.2];
-    const shaped = shapeAirtimes(baselines, 0.85, 0.15);
+    const shaped = shapeAirtimes(baselines);
     shaped.forEach((a, i) => {
-      expect(a).toBeGreaterThanOrEqual(baselines[i] * 0.85 - 1e-9);
+      expect(a).toBeGreaterThanOrEqual(baselines[i] - 1e-9);
     });
   });
 });

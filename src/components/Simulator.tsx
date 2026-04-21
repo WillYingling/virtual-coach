@@ -66,7 +66,7 @@ const trampolineHeight = 1.6;
 interface SimulatorProps {
   skills: Skill[];
   skillNames?: string[];
-  jumpPhaseLength?: number;
+  airtimeOverride?: number;
   restartKey?: number;
   onCurrentSkillChange?: (skillIndex: number, skillName?: string) => void;
   fpvEnabled?: boolean;
@@ -76,7 +76,7 @@ interface SimulatorProps {
 function Simulator({
   skills,
   skillNames,
-  jumpPhaseLength = 2,
+  airtimeOverride,
   restartKey = 0,
   onCurrentSkillChange,
   fpvEnabled = false,
@@ -144,7 +144,7 @@ function Simulator({
       <AthleteController
         skills={skills}
         skillNames={skillNames}
-        jumpPhaseLength={jumpPhaseLength}
+        airtimeOverride={airtimeOverride}
         restartKey={restartKey}
         onCurrentSkillChange={onCurrentSkillChange}
         fpvEnabled={fpvEnabled}
